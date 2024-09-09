@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from app.crud import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from app.crud import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM, get_current_user
 from app import schemas, crud
 from app.database import get_db
 from app.models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, User
@@ -68,25 +68,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 # 获取当前用户信息的接口
 @app.get("/users/me", response_model=schemas.UserResponse)
 def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    # 解析和验证 token
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
-    # 获取用户信息
-    user = db.query(User).filter(User.username == username).first()
-    if user is None:
-        raise credentials_exception
-
+    user = get_current_user(db, token)
     return user
 
 
