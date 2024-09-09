@@ -1,18 +1,11 @@
-from sqlalchemy.orm import Session
-from passlib.context import CryptContext
-from jose import JWTError, jwt
 from datetime import datetime, timedelta
+
 from fastapi import HTTPException
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
 
-from app.models import User
-
-# 密码加密器
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# JWT 配置
-SECRET_KEY = "ZZYISYYDS"  # 你应该使用一个更安全的密钥
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from core.config import pwd_context, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from models.user import User
 
 
 # 创建密码哈希
