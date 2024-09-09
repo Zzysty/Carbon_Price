@@ -16,6 +16,7 @@ if (import.meta.env.VITE_API_BASE_URL) {
 }
 
 axios.interceptors.request.use(
+  // @ts-ignore
   (config: AxiosRequestConfig) => {
     // let each request carry token
     // this example using the JWT token
@@ -35,12 +36,13 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-// add response interceptors
+// 添加响应拦截器
 axios.interceptors.response.use(
+  // @ts-ignore
   (response: AxiosResponse<HttpResponse>) => {
     const res = response.data;
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    // 如果自定义代码不是 200，则判断为错误。
+    if (res.code !== 200) {
       Message.error({
         content: res.msg || 'Error',
         duration: 5 * 1000,

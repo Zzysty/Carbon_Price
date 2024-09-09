@@ -56,16 +56,21 @@ const useUserStore = defineStore('user', {
     // Get user's information
     async info() {
       const res = await getUserInfo();
-
+      // eslint-disable-next-line no-console
+      console.log('test', res.data);
       this.setInfo(res.data);
     },
 
-    // Login
+    // Login 登录表单
     async login(loginForm: LoginData) {
       try {
         const res = await userLogin(loginForm);
-        setToken(res.data.token);
+        // eslint-disable-next-line no-console
+        // console.log('test', res.data);
+        setToken(res.data.access_token);
       } catch (err) {
+        // eslint-disable-next-line no-console
+        // console.log('test', err);
         clearToken();
         throw err;
       }
