@@ -6,6 +6,7 @@ from fastapi import UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from schemas.response import success_response, error_response
 from utils.utils import clean_numeric_column
 
 
@@ -55,34 +56,19 @@ async def process_file(file: UploadFile, db: Session, columns: dict, table_model
         new_data = df[~df['date'].isin(existing_dates)]
 
         if new_data.empty:
-            return {
-                "code": 200,
-                "message": "No new data."
-            }
+            return success_response(None, "No new data.")
 
-            # 导入新数据
+        # 导入新数据
         import_data_to_table(db, new_data, table_model)
 
-        return {
-            "code": 200,
-            "file_size": len(new_data),
-            "message": f"{table_model.__tablename__} Success"
-        }
+        return success_response({"file_size": len(new_data)}, f"{table_model.__tablename__} Success")
+
     except pd.errors.ParserError as e:
-        return {
-            "code": 40100,
-            "message": f"Pandas excel error: {str(e)}"
-        }
+        return error_response(f"Pandas excel error: {str(e)}", code=40100)
     except SQLAlchemyError as e:
-        return {
-            "code": 40200,
-            "message": f"Database error: {str(e)}"
-        }
+        return error_response(f"Database error: {str(e)}", code=40200)
     except Exception as e:
-        return {
-            "code": 500,
-            "message": f"Exception error: {str(e)}"
-        }
+        return error_response(f"Exception error: {str(e)}", code=500)
 
 
 # 获取列名映射

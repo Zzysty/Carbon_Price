@@ -1,9 +1,18 @@
 from fastapi import FastAPI
-
 from api.user import routes as user_routes
 from api.carbon_market import routes as carbon_market_routes
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# 配置 CORS 中间件
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # 允许访问的前端地址
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有方法（GET, POST, etc.）
+    allow_headers=["*"],  # 允许所有的请求头
+)
 
 
 @app.get("/")
