@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
 
+from api.carbon_market.crud import get_columns_map, process_file
 from db.session import get_db
 from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ
-from utils.file_processing import get_columns_map, process_file
 
 router = APIRouter()
 

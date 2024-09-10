@@ -36,7 +36,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         gender=user.gender
     )
 
-    return success_response(new_user, message="User successfully registered")
+    return success_response(data=None, message="User successfully registered")
 
 
 # 登录接口，返回 JWT token
@@ -61,3 +61,13 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     user = get_current_user(db, token)
     return success_response(user)
+
+
+# 用户注销接口
+@router.post("/logout", response_model=ResponseBase[str])
+def logout(token: str = Depends(oauth2_scheme)):
+    """
+    简单的无状态注销接口，只是提示客户端丢弃 JWT token。
+    """
+    # 理论上，不需要在服务器端执行任何操作，前端丢弃 token 即完成注销
+    return success_response(None, message="Successfully logged out")

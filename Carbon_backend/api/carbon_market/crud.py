@@ -46,6 +46,12 @@ async def process_file(file: UploadFile, db: Session, columns: dict, table_model
         numeric_columns = [col for col in columns.values() if col not in ['date', 'product']]
         df = clean_numeric_column(df, numeric_columns)
 
+        # 确保 'date' 列格式为日期
+        try:
+            df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d', errors='coerce').dt.date  # 按指定格式解析
+        except ValueError as e:
+            return error_response(f"Date parsing error: {str(e)}", code=403)
+
         # 将 DataFrame 中的 pd.NA 和 NaN 替换为 None，这样 SQLAlchemy 会将其插入为 NULL
         df = df.replace({pd.NA: None, np.nan: None})
 
@@ -64,9 +70,9 @@ async def process_file(file: UploadFile, db: Session, columns: dict, table_model
         return success_response({"file_size": len(new_data)}, f"{table_model.__tablename__} Success")
 
     except pd.errors.ParserError as e:
-        return error_response(f"Pandas excel error: {str(e)}", code=40100)
+        return error_response(f"Pandas excel error: {str(e)}", code=401)
     except SQLAlchemyError as e:
-        return error_response(f"Database error: {str(e)}", code=40200)
+        return error_response(f"Database error: {str(e)}", code=402)
     except Exception as e:
         return error_response(f"Exception error: {str(e)}", code=500)
 

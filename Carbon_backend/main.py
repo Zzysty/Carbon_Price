@@ -5,10 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "http://127.0.0.1:5173",
+]
+
 # 配置 CORS 中间件
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # 允许访问的前端地址
+    allow_origins=origins,  # 允许访问的前端地址
     allow_credentials=True,
     allow_methods=["*"],  # 允许所有方法（GET, POST, etc.）
     allow_headers=["*"],  # 允许所有的请求头
