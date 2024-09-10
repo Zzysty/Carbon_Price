@@ -11,15 +11,22 @@
       @submit="handleSubmit"
     >
       <a-form-item
+        field="gender"
+        label=""
+        :rules="[{ match: /one/, message: 'must select one' }]"
+      >
+        <a-radio-group v-model="userInfo.gender">
+          <a-radio value="radio one">男</a-radio>
+          <a-radio value="radio two">女</a-radio>
+        </a-radio-group>
+      </a-form-item>
+      <a-form-item
         field="username"
-        :rules="[{ required: true, message: $t('register.form.userName.errMsg') }]"
+        :rules="[{ required: true, message: '账号为必填项' }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
-        <a-input
-          v-model="userInfo.username"
-          :placeholder="$t('register.form.userName.placeholder')"
-        >
+        <a-input v-model="userInfo.username" placeholder="请输入账号">
           <template #prefix>
             <icon-user />
           </template>
@@ -27,13 +34,13 @@
       </a-form-item>
       <a-form-item
         field="password"
-        :rules="[{ required: true, message: $t('register.form.password.errMsg') }]"
+        :rules="[{ required: true, message: '密码为必填项' }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input-password
           v-model="userInfo.password"
-          :placeholder="$t('register.form.password.placeholder')"
+          placeholder="请输入密码"
           allow-clear
         >
           <template #prefix>
@@ -41,22 +48,44 @@
           </template>
         </a-input-password>
       </a-form-item>
+      <a-form-item
+        field="repassword"
+        :rules="[{ required: true, message: '确认密码为必填项' }]"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input-password
+          v-model="userInfo.password"
+          placeholder="请再次输入密码"
+          allow-clear
+        >
+          <template #prefix>
+            <icon-lock />
+          </template>
+        </a-input-password>
+      </a-form-item>
+      {{ userInfo }}
       <a-space :size="16" direction="vertical">
         <div class="register-form-password-actions">
-          <a-checkbox
-            checked="rememberPassword"
-            :model-value="loginConfig.rememberPassword"
-            @change="setRememberPassword as any"
-          >
-            {{ $t('register.form.rememberPassword') }}
-          </a-checkbox>
-          <a-link>{{ $t('register.form.forgetPassword') }}</a-link>
+          <!--          <a-checkbox-->
+          <!--            checked="rememberPassword"-->
+          <!--            :model-value="loginConfig.rememberPassword"-->
+          <!--            @change="setRememberPassword as any"-->
+          <!--          >-->
+          <!--            {{ $t('register.form.rememberPassword') }}-->
+          <!--          </a-checkbox>-->
+          <!--          <a-link>{{ $t('register.form.forgetPassword') }}</a-link>-->
         </div>
         <a-button type="primary" html-type="submit" long :loading="loading">
-          {{ $t('register.form.register') }}
+          注册
         </a-button>
-        <a-button type="text" long class="register-form-register-btn">
-          {{ $t('register.form.register') }}
+        <a-button
+          type="text"
+          long
+          class="register-form-register-btn"
+          @click="$router.push({ name: 'login' })"
+        >
+          已有账号，请登录
         </a-button>
       </a-space>
     </a-form>
@@ -72,7 +101,7 @@
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import { LoginData, RegisterData } from "@/api/user";
+  import { LoginData, RegisterData } from '@/api/user';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -80,14 +109,17 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
-  const loginConfig = useStorage('register-config', {
-    rememberPassword: true,
+  const registerConfig = useStorage('register-config', {
+    // rememberPassword: true,
     username: '',
     password: '',
+    gender: '',
+    email: '',
+    user_role: '',
   });
   const userInfo = reactive({
-    username: loginConfig.value.username,
-    password: loginConfig.value.password,
+    username: registerConfig.value.username,
+    password: registerConfig.value.password,
   });
 
   const handleSubmit = async ({
@@ -110,12 +142,12 @@
           },
         });
         Message.success('注册成功');
-        const { rememberPassword } = loginConfig.value;
+        // const { rememberPassword } = registerConfig.value;
         const { username, password } = values;
         // 实际生产环境需要进行加密存储。
         // The actual production environment requires encrypted storage.
-        loginConfig.value.username = rememberPassword ? username : '';
-        loginConfig.value.password = rememberPassword ? password : '';
+        // registerConfig.value.username = rememberPassword ? username : '';
+        // registerConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -123,9 +155,9 @@
       }
     }
   };
-  const setRememberPassword = (value: boolean) => {
-    loginConfig.value.rememberPassword = value;
-  };
+  // const setRememberPassword = (value: boolean) => {
+  //   registerConfig.value.rememberPassword = value;
+  // };
 </script>
 
 <style lang="less" scoped>

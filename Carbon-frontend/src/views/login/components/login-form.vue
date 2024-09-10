@@ -59,7 +59,7 @@
           type="text"
           long
           class="login-form-register-btn"
-          @click="$router.push('/register')"
+          @click="$router.push({ name: 'register' })"
         >
           {{ $t('login.form.register') }}
         </a-button>
