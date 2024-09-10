@@ -2,9 +2,11 @@ import { defineStore } from 'pinia';
 import {
   login as userLogin,
   logout as userLogout,
+  register as userRegister,
   getUserInfo,
   LoginData,
-} from '@/api/user';
+  RegisterData,
+} from "@/api/user";
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
@@ -12,21 +14,16 @@ import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
+    id: undefined,
     name: undefined,
     avatar: undefined,
     job: undefined,
-    organization: undefined,
     location: undefined,
     email: undefined,
     introduction: undefined,
     personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
     phone: undefined,
     registrationDate: undefined,
-    accountId: undefined,
-    certification: undefined,
     role: '',
   }),
 
@@ -48,17 +45,29 @@ const useUserStore = defineStore('user', {
       this.$patch(partial);
     },
 
-    // Reset user's information
+    // Reset user's information 重置用户信息
     resetInfo() {
       this.$reset();
     },
 
-    // Get user's information
+    // Get user's information 获取当前用户信息
     async info() {
       const res = await getUserInfo();
       // eslint-disable-next-line no-console
       console.log('test', res.data);
       this.setInfo(res.data);
+    },
+
+    // Register 注册表单
+    async register(registerForm: RegisterData) {
+      // eslint-disable-next-line no-useless-catch
+      try {
+        const res = await userRegister(registerForm);
+        // eslint-disable-next-line no-console
+        console.log('test', res.data);
+      } catch (err) {
+        throw err;
+      }
     },
 
     // Login 登录表单
@@ -75,14 +84,17 @@ const useUserStore = defineStore('user', {
         throw err;
       }
     },
+    // 注销后的回调操作
     logoutCallBack() {
       const appStore = useAppStore();
+      // 重置信息
       this.resetInfo();
+      // 清楚令牌
       clearToken();
       removeRouteListener();
       appStore.clearServerMenu();
     },
-    // Logout
+    // Logout 注销
     async logout() {
       try {
         await userLogout();

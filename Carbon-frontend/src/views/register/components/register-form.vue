@@ -1,24 +1,24 @@
 <template>
-  <div class="login-form-wrapper">
-    <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-sub-title">抓住碳足迹，探索绿色未来</div>
-    <div class="login-form-error-msg">{{ errorMessage }}</div>
+  <div class="register-form-wrapper">
+    <div class="register-form-title">注册</div>
+    <div class="register-form-sub-title">从这里开始你的碳市场之旅</div>
+    <div class="register-form-error-msg">{{ errorMessage }}</div>
     <a-form
       ref="loginForm"
       :model="userInfo"
-      class="login-form"
+      class="register-form"
       layout="vertical"
       @submit="handleSubmit"
     >
       <a-form-item
         field="username"
-        :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
+        :rules="[{ required: true, message: $t('register.form.userName.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input
           v-model="userInfo.username"
-          :placeholder="$t('login.form.userName.placeholder')"
+          :placeholder="$t('register.form.userName.placeholder')"
         >
           <template #prefix>
             <icon-user />
@@ -27,13 +27,13 @@
       </a-form-item>
       <a-form-item
         field="password"
-        :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+        :rules="[{ required: true, message: $t('register.form.password.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input-password
           v-model="userInfo.password"
-          :placeholder="$t('login.form.password.placeholder')"
+          :placeholder="$t('register.form.password.placeholder')"
           allow-clear
         >
           <template #prefix>
@@ -42,26 +42,21 @@
         </a-input-password>
       </a-form-item>
       <a-space :size="16" direction="vertical">
-        <div class="login-form-password-actions">
+        <div class="register-form-password-actions">
           <a-checkbox
             checked="rememberPassword"
             :model-value="loginConfig.rememberPassword"
             @change="setRememberPassword as any"
           >
-            {{ $t('login.form.rememberPassword') }}
+            {{ $t('register.form.rememberPassword') }}
           </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+          <a-link>{{ $t('register.form.forgetPassword') }}</a-link>
         </div>
         <a-button type="primary" html-type="submit" long :loading="loading">
-          {{ $t('login.form.login') }}
+          {{ $t('register.form.register') }}
         </a-button>
-        <a-button
-          type="text"
-          long
-          class="login-form-register-btn"
-          @click="$router.push('/register')"
-        >
-          {{ $t('login.form.register') }}
+        <a-button type="text" long class="register-form-register-btn">
+          {{ $t('register.form.register') }}
         </a-button>
       </a-space>
     </a-form>
@@ -77,7 +72,7 @@
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import type { LoginData } from '@/api/user';
+  import { LoginData, RegisterData } from "@/api/user";
 
   const router = useRouter();
   const { t } = useI18n();
@@ -85,7 +80,7 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
-  const loginConfig = useStorage('login-config', {
+  const loginConfig = useStorage('register-config', {
     rememberPassword: true,
     username: '',
     password: '',
@@ -106,15 +101,15 @@
     if (!errors) {
       setLoading(true);
       try {
-        await userStore.login(values as LoginData);
+        await userStore.register(values as RegisterData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         await router.push({
-          name: (redirect as string) || 'Workplace',
+          name: (redirect as string) || 'login',
           query: {
             ...othersQuery,
           },
         });
-        Message.success(t('login.form.login.success'));
+        Message.success('注册成功');
         const { rememberPassword } = loginConfig.value;
         const { username, password } = values;
         // 实际生产环境需要进行加密存储。
@@ -134,7 +129,7 @@
 </script>
 
 <style lang="less" scoped>
-  .login-form {
+  .register-form {
     &-wrapper {
       width: 320px;
     }

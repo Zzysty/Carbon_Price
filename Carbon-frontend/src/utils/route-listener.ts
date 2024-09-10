@@ -27,5 +27,6 @@ export function listenerRouteChange(
 }
 
 export function removeRouteListener() {
+  // 移除路由监听器
   emitter.off(key);
 }

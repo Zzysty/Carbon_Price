@@ -4,14 +4,14 @@ export interface UserState {
   id?: number;
   name?: string;
   gender?: string;
-  avatar?: string;
-  job?: string;
-  location?: string;
+  // avatar?: string;
+  // job?: string;
+  // location?: string;
   email?: string;
-  introduction?: string;
-  personalWebsite?: string;
-  phone?: string;
-  registrationDate?: string;
+  // introduction?: string;
+  // personalWebsite?: string;
+  // phone?: string;
+  // registrationDate?: string;
   user_role: RoleType;
 }
 

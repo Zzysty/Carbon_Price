@@ -2,15 +2,12 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img
-          alt="logo"
-          src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
-        />
+        <img alt="logo" src="../../assets/logo.svg" />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Arco Pro
+          Carbon Price
         </a-typography-title>
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
@@ -82,33 +79,33 @@
           </a-button>
         </a-tooltip>
       </li>
-      <li>
-        <a-tooltip :content="$t('settings.navbar.alerts')">
-          <div class="message-box-trigger">
-            <a-badge :count="9" dot>
-              <a-button
-                class="nav-btn"
-                type="outline"
-                :shape="'circle'"
-                @click="setPopoverVisible"
-              >
-                <icon-notification />
-              </a-button>
-            </a-badge>
-          </div>
-        </a-tooltip>
-        <a-popover
-          trigger="click"
-          :arrow-style="{ display: 'none' }"
-          :content-style="{ padding: 0, minWidth: '400px' }"
-          content-class="message-popover"
-        >
-          <div ref="refBtn" class="ref-btn"></div>
-          <template #content>
-            <message-box />
-          </template>
-        </a-popover>
-      </li>
+<!--      <li>-->
+<!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
+<!--          <div class="message-box-trigger">-->
+<!--            <a-badge :count="9" dot>-->
+<!--              <a-button-->
+<!--                class="nav-btn"-->
+<!--                type="outline"-->
+<!--                :shape="'circle'"-->
+<!--                @click="setPopoverVisible"-->
+<!--              >-->
+<!--                <icon-notification />-->
+<!--              </a-button>-->
+<!--            </a-badge>-->
+<!--          </div>-->
+<!--        </a-tooltip>-->
+<!--        <a-popover-->
+<!--          trigger="click"-->
+<!--          :arrow-style="{ display: 'none' }"-->
+<!--          :content-style="{ padding: 0, minWidth: '400px' }"-->
+<!--          content-class="message-popover"-->
+<!--        >-->
+<!--          <div ref="refBtn" class="ref-btn"></div>-->
+<!--          <template #content>-->
+<!--            <message-box />-->
+<!--          </template>-->
+<!--        </a-popover>-->
+<!--      </li>-->
       <li>
         <a-tooltip
           :content="
@@ -244,6 +241,7 @@
     });
     refBtn.value.dispatchEvent(event);
   };
+  // 注销
   const handleLogout = () => {
     logout();
   };
@@ -285,9 +283,11 @@
     display: flex;
     padding-right: 20px;
     list-style: none;
+
     :deep(.locale-select) {
       border-radius: 20px;
     }
+
     li {
       display: flex;
       align-items: center;
@@ -298,16 +298,19 @@
       color: var(--color-text-1);
       text-decoration: none;
     }
+
     .nav-btn {
       border-color: rgb(var(--gray-2));
       color: rgb(var(--gray-8));
       font-size: 16px;
     }
+
     .trigger-btn,
     .ref-btn {
       position: absolute;
       bottom: 14px;
     }
+
     .trigger-btn {
       margin-left: 14px;
     }
