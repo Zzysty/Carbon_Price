@@ -22,16 +22,16 @@ const LIST: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    {
-      path: 'card',
-      name: 'Card',
-      component: () => import('@/views/list/card/index.vue'),
-      meta: {
-        locale: 'menu.list.cardList',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
+    // {
+    //   path: 'card',
+    //   name: 'Card',
+    //   component: () => import('@/views/list/card/index.vue'),
+    //   meta: {
+    //     locale: 'menu.list.cardList',
+    //     requiresAuth: true,
+    //     roles: ['*'],
+    //   },
+    // },
   ],
 };
 

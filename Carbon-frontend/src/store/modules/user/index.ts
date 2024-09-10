@@ -6,7 +6,7 @@ import {
   getUserInfo,
   LoginData,
   RegisterData,
-} from "@/api/user";
+} from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
@@ -24,7 +24,7 @@ const useUserStore = defineStore('user', {
     personalWebsite: undefined,
     phone: undefined,
     registrationDate: undefined,
-    role: '',
+    user_role: '',
   }),
 
   getters: {
@@ -36,8 +36,8 @@ const useUserStore = defineStore('user', {
   actions: {
     switchRoles() {
       return new Promise((resolve) => {
-        this.role = this.role === 'user' ? 'admin' : 'user';
-        resolve(this.role);
+        this.user_role = this.user_role === 'user' ? 'admin' : 'user';
+        resolve(this.user_role);
       });
     },
     // Set user's information
@@ -54,7 +54,7 @@ const useUserStore = defineStore('user', {
     async info() {
       const res = await getUserInfo();
       // eslint-disable-next-line no-console
-      console.log('test', res.data);
+      // console.log('test', res.data);
       this.setInfo(res.data);
     },
 
@@ -63,8 +63,11 @@ const useUserStore = defineStore('user', {
       // eslint-disable-next-line no-useless-catch
       try {
         const res = await userRegister(registerForm);
-        // eslint-disable-next-line no-console
-        console.log('test', res.data);
+        if (res.data.code === 400) {
+          // 注册用户已存在
+          // eslint-disable-next-line no-console
+          console.log('注册失败', res.data.msg);
+        }
       } catch (err) {
         throw err;
       }

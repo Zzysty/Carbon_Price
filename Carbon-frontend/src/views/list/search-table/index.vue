@@ -7,11 +7,11 @@
           <a-form
             :model="formModel"
             :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 18 }"
+            :wrapper-col-props="{ span: 14 }"
             label-align="left"
           >
-            <a-row :gutter="16">
-              <a-col :span="8">
+            <a-row :gutter="18">
+              <a-col :span="6">
                 <a-form-item
                   field="number"
                   :label="$t('searchTable.form.number')"
@@ -22,50 +22,15 @@
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
-                <a-form-item field="name" :label="$t('searchTable.form.name')">
-                  <a-input
-                    v-model="formModel.name"
-                    :placeholder="$t('searchTable.form.name.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="contentType"
-                  :label="$t('searchTable.form.contentType')"
-                >
-                  <a-select
-                    v-model="formModel.contentType"
-                    :options="contentTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="filterType"
-                  :label="$t('searchTable.form.filterType')"
-                >
-                  <a-select
-                    v-model="formModel.filterType"
-                    :options="filterTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="createdTime"
-                  :label="$t('searchTable.form.createdTime')"
-                >
+              <a-col :span="6">
+                <a-form-item field="createdTime" label="日期范围">
                   <a-range-picker
-                    v-model="formModel.createdTime"
+                    v-model="formModel.dateRange"
                     style="width: 100%"
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
+              <a-col :span="6 ">
                 <a-form-item
                   field="status"
                   :label="$t('searchTable.form.status')"
@@ -80,107 +45,101 @@
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
+        <!--        <a-divider style="height: 84px" direction="vertical" />-->
+        <!--        <a-col :flex="'86px'" style="text-align: right"></a-col>-->
+      </a-row>
+
+      <a-divider style="margin-top: 0" />
+
+      <a-row style="margin-bottom: 16px">
+        <a-col :span="12">
+          <a-space :size="'small'">
             <a-button type="primary" @click="search">
               <template #icon>
                 <icon-search />
               </template>
-              {{ $t('searchTable.form.search') }}
+              查询
             </a-button>
             <a-button @click="reset">
               <template #icon>
                 <icon-refresh />
               </template>
-              {{ $t('searchTable.form.reset') }}
+              重置
             </a-button>
-          </a-space>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0" />
-      <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button type="primary">
-              <template #icon>
-                <icon-plus />
-              </template>
-              {{ $t('searchTable.operation.create') }}
-            </a-button>
-            <a-upload action="/">
-              <template #upload-button>
-                <a-button>
-                  {{ $t('searchTable.operation.import') }}
-                </a-button>
-              </template>
-            </a-upload>
           </a-space>
         </a-col>
         <a-col
           :span="12"
           style="display: flex; align-items: center; justify-content: end"
         >
-          <a-button>
-            <template #icon>
-              <icon-download />
-            </template>
-            {{ $t('searchTable.operation.download') }}
-          </a-button>
-          <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search"
-              ><icon-refresh size="18"
-            /></div>
-          </a-tooltip>
-          <a-dropdown @select="handleSelectDensity">
-            <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
-            </a-tooltip>
-            <template #content>
-              <a-doption
-                v-for="item in densityList"
-                :key="item.value"
-                :value="item.value"
-                :class="{ active: item.value === size }"
-              >
-                <span>{{ item.name }}</span>
-              </a-doption>
-            </template>
-          </a-dropdown>
-          <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover
-              trigger="click"
-              position="bl"
-              @popup-visible-change="popupVisibleChange"
-            >
-              <div class="action-icon"><icon-settings size="18" /></div>
+          <a-space :size="'small'">
+            <a-upload action="/" />
+            <a-button>
+              <template #icon>
+                <icon-download />
+              </template>
+              导出
+            </a-button>
+
+            <a-dropdown @select="handleSelectDensity">
+              <a-tooltip :content="$t('searchTable.actions.density')">
+                <div class="action-icon">
+                  <icon-line-height size="18" />
+                </div>
+              </a-tooltip>
               <template #content>
-                <div id="tableSetting">
-                  <div
-                    v-for="(item, index) in showColumns"
-                    :key="item.dataIndex"
-                    class="setting"
-                  >
-                    <div style="margin-right: 4px; cursor: move">
-                      <icon-drag-arrow />
-                    </div>
-                    <div>
-                      <a-checkbox
-                        v-model="item.checked"
-                        @change="
-                          handleChange($event, item as TableColumnData, index)
-                        "
-                      >
-                      </a-checkbox>
-                    </div>
-                    <div class="title">
-                      {{ item.title === '#' ? '序列号' : item.title }}
+                <a-doption
+                  v-for="item in densityList"
+                  :key="item.value"
+                  :value="item.value"
+                  :class="{ active: item.value === size }"
+                >
+                  <span>{{ item.name }}</span>
+                </a-doption>
+              </template>
+            </a-dropdown>
+            <a-tooltip :content="$t('searchTable.actions.columnSetting')">
+              <a-popover
+                trigger="click"
+                position="bl"
+                @popup-visible-change="popupVisibleChange"
+              >
+                <div class="action-icon">
+                  <icon-settings size="18" />
+                </div>
+                <template #content>
+                  <div id="tableSetting">
+                    <div
+                      v-for="(item, index) in showColumns"
+                      :key="item.dataIndex"
+                      class="setting"
+                    >
+                      <div style="margin-right: 4px; cursor: move">
+                        <icon-drag-arrow />
+                      </div>
+                      <div>
+                        <a-checkbox
+                          v-model="item.checked"
+                          @change="
+                            handleChange($event, item as TableColumnData, index)
+                          "
+                        >
+                        </a-checkbox>
+                      </div>
+                      <div class="title">
+                        {{ item.title === '#' ? '序列号' : item.title }}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </a-popover>
-          </a-tooltip>
+                </template>
+              </a-popover>
+            </a-tooltip>
+            <a-tooltip :content="$t('searchTable.actions.refresh')">
+              <div class="action-icon" @click="search">
+                <icon-refresh size="18" />
+              </div>
+            </a-tooltip>
+          </a-space>
         </a-col>
       </a-row>
       <a-table
@@ -265,7 +224,7 @@
       name: '',
       contentType: '',
       filterType: '',
-      createdTime: [],
+      dateRange: [],
       status: '',
     };
   };
@@ -487,6 +446,7 @@
   .container {
     padding: 0 20px 20px 20px;
   }
+
   :deep(.arco-table-th) {
     &:last-child {
       .arco-table-th-item-title {
@@ -494,18 +454,22 @@
       }
     }
   }
+
   .action-icon {
     margin-left: 12px;
     cursor: pointer;
   }
+
   .active {
     color: #0960bd;
     background-color: #e3f4fc;
   }
+
   .setting {
     display: flex;
     align-items: center;
     width: 200px;
+
     .title {
       margin-left: 12px;
       cursor: pointer;

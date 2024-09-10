@@ -1,5 +1,5 @@
 import axios from 'axios';
-import qs from 'qs';
+import qs from 'query-string';
 import type { RouteRecordNormalized } from 'vue-router';
 import { Token, UserState } from '@/store/modules/user/types';
 
@@ -33,6 +33,7 @@ export function register(data: RegisterData) {
   return axios.post<RegisterRes>('/api/user/register', data);
 }
 
+// @ts-ignore
 export function login(data: LoginData) {
   // 登录
   return axios.post<LoginRes>('/api/user/login', qs.stringify(data), {
@@ -42,16 +43,19 @@ export function login(data: LoginData) {
   });
 }
 
+// @ts-ignore
 export function logout() {
   // 注销
   return axios.post<LoginRes>('/api/user/logout');
 }
 
+// @ts-ignore
 export function getUserInfo() {
   // 获取当前用户信息
   return axios.get<UserState>('/api/user/me');
 }
 
+// @ts-ignore
 export function getMenuList() {
   return axios.post<RouteRecordNormalized[]>('/api/user/menu');
 }

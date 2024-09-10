@@ -5,14 +5,14 @@ import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
 export interface HttpResponse<T = unknown> {
-  status: number;
-  msg: string;
   code: number;
+  msg: string;
   data: T;
 }
 
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+  axios.defaults.withCredentials = true;
 }
 
 axios.interceptors.request.use(
@@ -43,10 +43,10 @@ axios.interceptors.response.use(
     const res = response.data;
     // 如果自定义代码不是 200，则判断为错误。
     if (res.code !== 200) {
-      Message.error({
-        content: res.msg || 'Error',
-        duration: 5 * 1000,
-      });
+      // Message.error({
+      //   content: res.msg || 'Error',
+      //   duration: 5 * 1000,
+      // });
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (
         [50008, 50012, 50014].includes(res.code) &&

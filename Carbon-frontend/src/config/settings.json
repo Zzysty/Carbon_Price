@@ -3,7 +3,7 @@
   "colorWeak": false,
   "navbar": true,
   "menu": true,
-  "topMenu": false,
+  "topMenu": true,
   "hideMenu": false,
   "menuCollapse": false,
   "footer": true,
