@@ -11,7 +11,7 @@ class User(Base):
     username = Column(String(50), nullable=False)
     password = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False)
-    user_role = Column(Enum('admin', 'user', 'guest'), nullable=False)
+    user_role = Column(Enum('admin', 'user'), nullable=False)
     gender = Column(Enum('male', 'female'), nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
