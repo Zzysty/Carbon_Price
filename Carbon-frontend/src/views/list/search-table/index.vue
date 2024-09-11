@@ -11,18 +11,18 @@
             label-align="left"
           >
             <a-row :gutter="18">
-              <a-col :span="6">
-                <a-form-item
-                  field="number"
-                  :label="$t('searchTable.form.number')"
-                >
-                  <a-input
-                    v-model="formModel.number"
-                    :placeholder="$t('searchTable.form.number.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
+              <!--              <a-col :span="6">-->
+              <!--                <a-form-item-->
+              <!--                  field="number"-->
+              <!--                  :label="$t('searchTable.form.number')"-->
+              <!--                >-->
+              <!--                  <a-input-->
+              <!--                    v-model="formModel.number"-->
+              <!--                    :placeholder="$t('searchTable.form.number.placeholder')"-->
+              <!--                  />-->
+              <!--                </a-form-item>-->
+              <!--              </a-col>-->
+              <a-col :span="8">
                 <a-form-item field="createdTime" label="日期范围">
                   <a-range-picker
                     v-model="formModel.dateRange"
@@ -30,15 +30,12 @@
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="6 ">
-                <a-form-item
-                  field="status"
-                  :label="$t('searchTable.form.status')"
-                >
+              <a-col :span="6">
+                <a-form-item field="product" label="产品">
                   <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
+                    v-model="formModel.product"
+                    :options="productOptions"
+                    placeholder="请选择产品"
                   />
                 </a-form-item>
               </a-col>
@@ -150,11 +147,11 @@
         :data="renderData"
         :bordered="false"
         :size="size"
-        @page-change="onPageChange"
+        column-resizable
       >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
+        <!--        <template #index="{ rowIndex }">-->
+        <!--          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}-->
+        <!--        </template>-->
         <template #contentType="{ record }">
           <a-space>
             <a-avatar
@@ -205,45 +202,47 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive, watch, nextTick } from 'vue';
+  import { computed, nextTick, ref, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-  import { Pagination } from '@/types/global';
+  import {
+    HBCarbonMarketParams,
+    HBCarbonMarketRecord,
+    queryHubeiList,
+  } from '@/api/list';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
+  import { Message } from '@arco-design/web-vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
   const generateFormModel = () => {
     return {
-      number: '',
-      name: '',
-      contentType: '',
-      filterType: '',
       dateRange: [],
-      status: '',
+      product: '',
     };
   };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const renderData = ref<PolicyRecord[]>([]);
+  const renderData = ref<HBCarbonMarketRecord[]>([]);
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
 
-  const size = ref<SizeProps>('medium');
+  const size = ref<SizeProps>('small');
+  const errorMessage = ref('');
 
-  const basePagination: Pagination = {
-    current: 1,
-    pageSize: 20,
-  };
-  const pagination = reactive({
-    ...basePagination,
-  });
+  // const basePagination: Pagination = {
+  //   current: 1,
+  //   pageSize: 20,
+  // };
+  // const pagination = reactive({
+  //   ...basePagination,
+  // });
+  const pagination = { pageSize: 20 };
   const densityList = computed(() => [
     {
       name: t('searchTable.size.mini'),
@@ -264,91 +263,121 @@
   ]);
   const columns = computed<TableColumnData[]>(() => [
     {
-      title: t('searchTable.columns.index'),
-      dataIndex: 'index',
-      slotName: 'index',
+      title: 'id',
+      dataIndex: 'id',
     },
     {
-      title: t('searchTable.columns.number'),
-      dataIndex: 'number',
+      title: '产品',
+      dataIndex: 'product',
+      filterable: {
+        filters: [
+          {
+            text: 'HBEA',
+            value: 'HBEA',
+          },
+          {
+            text: 'HBEA2022',
+            value: 'HBEA2022',
+          },
+        ],
+        filter: (value, row) => row.product.includes(value),
+      },
     },
     {
-      title: t('searchTable.columns.name'),
-      dataIndex: 'name',
+      title: '日期',
+      dataIndex: 'date',
+      sortable: {
+        sortDirections: ['ascend', 'descend'],
+      },
     },
     {
-      title: t('searchTable.columns.contentType'),
-      dataIndex: 'contentType',
-      slotName: 'contentType',
+      title: '最新',
+      dataIndex: 'latest_price',
     },
     {
-      title: t('searchTable.columns.filterType'),
-      dataIndex: 'filterType',
+      title: '涨跌幅',
+      dataIndex: 'price_change',
+      filterable: {
+        filters: [
+          {
+            text: '正',
+            value: '0',
+          },
+          {
+            text: '负',
+            value: '-1',
+          },
+        ],
+        filter: (value, record) => record.price_change > value,
+        // multiple: true, // 允许多选
+      },
     },
     {
-      title: t('searchTable.columns.count'),
-      dataIndex: 'count',
+      title: '最高',
+      dataIndex: 'highest_price',
     },
     {
-      title: t('searchTable.columns.createdTime'),
-      dataIndex: 'createdTime',
+      title: '最低',
+      dataIndex: 'lowest_price',
     },
     {
-      title: t('searchTable.columns.status'),
-      dataIndex: 'status',
-      slotName: 'status',
+      title: '成交量',
+      dataIndex: 'volume',
     },
     {
-      title: t('searchTable.columns.operations'),
+      title: '成交额',
+      dataIndex: 'turnover',
+    },
+    {
+      title: '昨收盘价',
+      dataIndex: 'previous_close_price',
+    },
+    {
+      title: '操作',
       dataIndex: 'operations',
       slotName: 'operations',
     },
   ]);
-  const contentTypeOptions = computed<SelectOptionData[]>(() => [
+  const productOptions = computed<SelectOptionData[]>(() => [
     {
-      label: t('searchTable.form.contentType.img'),
-      value: 'img',
+      label: 'HBEA',
+      value: 'HBEA',
     },
     {
-      label: t('searchTable.form.contentType.horizontalVideo'),
-      value: 'horizontalVideo',
-    },
-    {
-      label: t('searchTable.form.contentType.verticalVideo'),
-      value: 'verticalVideo',
+      label: 'HBEA2022',
+      value: 'HBEA2022',
     },
   ]);
-  const filterTypeOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.filterType.artificial'),
-      value: 'artificial',
-    },
-    {
-      label: t('searchTable.form.filterType.rules'),
-      value: 'rules',
-    },
-  ]);
-  const statusOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.status.online'),
-      value: 'online',
-    },
-    {
-      label: t('searchTable.form.status.offline'),
-      value: 'offline',
-    },
-  ]);
-  const fetchData = async (
-    params: PolicyParams = { current: 1, pageSize: 20 }
-  ) => {
+  // 缓存键
+  const CACHE_KEY = 'hb_carbon_market_data';
+  // 提交查询请求
+  const fetchData = async (params: HBCarbonMarketParams) => {
     setLoading(true);
     try {
-      const { data } = await queryPolicyList(params);
-      renderData.value = data.list;
-      pagination.current = params.current;
-      pagination.total = data.total;
+      // 检查是否存在缓存的数据
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      if (cachedData) {
+        Message.loading('正在加载缓存数据');
+        const parsedData = JSON.parse(cachedData);
+        // 短暂延时以便用户看到加载提示
+        // eslint-disable-next-line no-promise-executor-return
+        // await new Promise((resolve) => setTimeout(resolve, 500));
+        // 如果缓存存在，可以根据需求决定是否直接返回，或者进行进一步处理
+        renderData.value = parsedData.items;
+        setLoading(false);
+        return;
+      }
+
+      // 无缓存发送请求
+      const { data } = await queryHubeiList(params);
+
+      // 将返回数据缓存到 localStorage
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+      renderData.value = data.items;
     } catch (err) {
-      // you can report use errorHandler or other
+      errorMessage.value = (err as Error).message;
+      Message.error(errorMessage.value);
     } finally {
       setLoading(false);
     }
@@ -356,17 +385,24 @@
 
   const search = () => {
     fetchData({
-      ...basePagination,
+      // ...basePagination,
       ...formModel.value,
-    } as unknown as PolicyParams);
+    } as unknown as HBCarbonMarketParams);
   };
-  const onPageChange = (current: number) => {
-    fetchData({ ...basePagination, current });
-  };
+  // const onPageChange = (current: number) => {
+  //   fetchData({ ...basePagination, current });
+  // };
 
-  fetchData();
+  fetchData({
+    // ...basePagination,
+    ...formModel.value,
+  } as unknown as HBCarbonMarketParams);
+
   const reset = () => {
+    // 清空表单
     formModel.value = generateFormModel();
+    // 清楚查询缓存
+    localStorage.removeItem(CACHE_KEY);
   };
 
   const handleSelectDensity = (

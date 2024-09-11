@@ -14,7 +14,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
     NProgress.start(); // 开始显示进度条
     const userStore = useUserStore();
     if (isLogin()) {
-      if (userStore.role) {
+      if (userStore.user_role) {
         next();
       } else {
         try {

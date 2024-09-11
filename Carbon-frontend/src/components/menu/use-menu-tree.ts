@@ -19,6 +19,7 @@ export default function useMenuTree() {
     copyRouter.sort((a: RouteRecordNormalized, b: RouteRecordNormalized) => {
       return (a.meta.order || 0) - (b.meta.order || 0);
     });
+
     function travel(_routes: RouteRecordRaw[], layer: number) {
       if (!_routes) return null;
 
@@ -60,6 +61,7 @@ export default function useMenuTree() {
       });
       return collector.filter(Boolean);
     }
+
     return travel(copyRouter, 0);
   });
 

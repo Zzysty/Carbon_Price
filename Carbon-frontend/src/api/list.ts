@@ -2,34 +2,32 @@ import axios from 'axios';
 import qs from 'query-string';
 import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
 
-export interface PolicyRecord {
+export interface HBCarbonMarketRecord {
   id: string;
-  number: number;
-  name: string;
-  contentType: 'img' | 'horizontalVideo' | 'verticalVideo';
-  filterType: 'artificial' | 'rules';
-  count: number;
-  status: 'online' | 'offline';
-  createdTime: string;
+  product: string;
+  date: Date;
+  latest_price: number;
+  price_change: number;
+  highest_price: number;
+  lowest_price: number;
+  volume: number;
+  turnover: number;
+  previous_close_price: number;
 }
 
-export interface PolicyParams extends Partial<PolicyRecord> {
+export interface HBCarbonMarketParams {
   current: number;
   pageSize: number;
+  dateRange?: [string, string];
 }
 
-export interface PolicyListRes {
-  list: PolicyRecord[];
+export interface HBCarbonMarketListRes {
+  list: HBCarbonMarketRecord[];
   total: number;
 }
 
-export function queryPolicyList(params: PolicyParams) {
-  return axios.get<PolicyListRes>('/api/list/policy', {
-    params,
-    paramsSerializer: (obj) => {
-      return qs.stringify(obj);
-    },
-  });
+export function queryHubeiList(params: HBCarbonMarketParams) {
+  return axios.post<HBCarbonMarketListRes>('/api/carbon_market/hb', params);
 }
 
 export interface ServiceRecord {
@@ -43,6 +41,7 @@ export interface ServiceRecord {
   enable?: boolean;
   expires?: boolean;
 }
+
 export function queryInspectionList() {
   return axios.get('/api/list/quality-inspection');
 }
