@@ -1,11 +1,15 @@
 import io
+from datetime import date
+from typing import Optional, List
 
 import numpy as np
 import pandas as pd
 from fastapi import UploadFile
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from models import CarbonMarketHB
 from schemas.response import success_response, error_response
 from utils.utils import clean_numeric_column
 
@@ -120,3 +124,18 @@ def get_columns_map(market: str) -> dict:
         },
     }
     return column_maps.get(market, {})
+
+
+# 查询全量数据，根据查询条件
+def get_hb_data(db: Session, date_range: Optional[List[date]] = None):
+    query = db.query(CarbonMarketHB)
+
+    # 按日期范围过滤
+    if date_range and len(date_range) == 2:
+        start_date, end_date = date_range
+        query = query.filter(and_(CarbonMarketHB.date >= start_date, CarbonMarketHB.date <= end_date))
+
+    items = query.all()  # 获取查询结果列表
+    total = len(items)  # 计算总数
+
+    return {"total": total, "items": items}
