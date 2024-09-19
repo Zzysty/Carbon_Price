@@ -1,5 +1,5 @@
 <template>
-  <a-layout-footer class="footer">Arco Pro</a-layout-footer>
+  <a-layout-footer class="footer">by zzy @17573204410</a-layout-footer>
 </template>
 
 <script lang="ts" setup></script>

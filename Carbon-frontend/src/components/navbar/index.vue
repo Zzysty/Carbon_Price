@@ -230,16 +230,16 @@
   const setVisible = () => {
     appStore.updateSettings({ globalSettings: true });
   };
-  const refBtn = ref();
+  // const refBtn = ref();
   const triggerBtn = ref();
-  const setPopoverVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    refBtn.value.dispatchEvent(event);
-  };
+  // const setPopoverVisible = () => {
+  //   const event = new MouseEvent('click', {
+  //     view: window,
+  //     bubbles: true,
+  //     cancelable: true,
+  //   });
+  //   refBtn.value.dispatchEvent(event);
+  // };
   // 注销
   const handleLogout = () => {
     logout();

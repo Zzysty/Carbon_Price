@@ -13,11 +13,41 @@ const LIST: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'search-table', // The midline path complies with SEO specifications
-      name: 'SearchTable',
+      path: 'search-table-hb', // The midline path complies with SEO specifications
+      name: 'SearchTableHB',
       component: () => import('@/views/list/search-table/index.vue'),
       meta: {
-        locale: 'menu.list.searchTable',
+        locale: 'menu.list.Hubei',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'search-table-gd', // The midline path complies with SEO specifications
+      name: 'SearchTableGD',
+      component: () => import('@/views/list/search-table/guangdong.vue'),
+      meta: {
+        locale: 'menu.list.Guangdong',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'search-table-tj', // The midline path complies with SEO specifications
+      name: 'SearchTableTJ',
+      component: () => import('@/views/list/search-table/tianjin.vue'),
+      meta: {
+        locale: 'menu.list.Tianjin',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'search-table-bj', // The midline path complies with SEO specifications
+      name: 'SearchTableBJ',
+      component: () => import('@/views/list/search-table/beijing.vue'),
+      meta: {
+        locale: 'menu.list.Beijing',
         requiresAuth: true,
         roles: ['*'],
       },

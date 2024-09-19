@@ -2,12 +2,41 @@ import axios from 'axios';
 import type { TableData } from '@arco-design/web-vue/es/table/interface';
 
 export interface ContentDataRecord {
-  x: string;
+  x: Date;
   y: number;
 }
 
-export function queryContentData() {
-  return axios.get<ContentDataRecord[]>('/api/content-data');
+export interface ContentDataRecordListRes {
+  total: number;
+  items: ContentDataRecord[];
+}
+
+// 获取湖北的日期碳价格数据
+export function queryContentDataHb() {
+  return axios.get<ContentDataRecordListRes[]>(
+    '/api/carbon_market/content-data/hb'
+  );
+}
+
+// 获取广东的日期碳价格数据
+export function queryContentDataGd() {
+  return axios.get<ContentDataRecordListRes[]>(
+    '/api/carbon_market/content-data/gd'
+  );
+}
+
+// 获取天津的日期碳价格数据
+export function queryContentDataTj() {
+  return axios.get<ContentDataRecordListRes[]>(
+    '/api/carbon_market/content-data/tj'
+  );
+}
+
+// 获取北京的日期碳价格数据
+export function queryContentDataBj() {
+  return axios.get<ContentDataRecordListRes[]>(
+    '/api/carbon_market/content-data/bj'
+  );
 }
 
 export interface PopularRecord {
@@ -18,5 +47,5 @@ export interface PopularRecord {
 }
 
 export function queryPopularList(params: { type: string }) {
-  return axios.get<TableData[]>('/api/popular/list', { params });
+  return axios.get<PopularRecord[]>('/api/popular/list', { params });
 }

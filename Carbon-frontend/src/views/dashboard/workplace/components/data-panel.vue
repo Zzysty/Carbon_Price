@@ -2,7 +2,7 @@
   <a-grid :cols="24" :row-gap="16" class="panel">
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 4 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -12,22 +12,43 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.onlineContent')"
-          :value="373.5"
-          :precision="1"
+          :title="$t('workplace.carbonMarket')"
+          :value="carbonMarketCount"
           :value-from="0"
           animation
           show-group-separator
         >
           <template #suffix>
-            W+ <span class="unit">{{ $t('workplace.pecs') }}</span>
+            <span class="unit">{{ $t('workplace.pecs') }}</span>
           </template>
         </a-statistic>
       </a-space>
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 8 }"
+    >
+      <a-space :size="'mini'">
+        <a-link href="https://www.hbets.cn/list_51.html" icon>
+          湖北碳排放权交易中心
+        </a-link>
+        <a-divider direction="vertical" />
+        <a-link href="https://www.cnemission.com/article/hqxx/" icon>
+          广州碳排放权交易中心
+        </a-link>
+        <a-divider direction="vertical" />
+        <a-link href="https://www.chinatcx.com.cn/list/13.html?page=1" icon>
+          天津排放权交易所
+        </a-link>
+        <a-divider direction="vertical" />
+        <a-link href="https://www.bjets.com.cn/article/jyxx/?105" icon>
+          北京绿色交易所
+        </a-link>
+      </a-space>
+    </a-grid-item>
+    <a-grid-item
+      class="panel-col"
+      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 4 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -37,8 +58,8 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.putIn')"
-          :value="368"
+          :title="$t('workplace.factor')"
+          :value="externalFactorsCount"
           :value-from="0"
           animation
           show-group-separator
@@ -51,50 +72,41 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
-    >
-      <a-space>
-        <a-avatar :size="54" class="col-avatar">
-          <img
-            alt="avatar"
-            src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77d74c9a245adeae1ec7fb5d4539738d.svg~tplv-49unhts6dw-image.image"
-          />
-        </a-avatar>
-        <a-statistic
-          :title="$t('workplace.newDay')"
-          :value="8874"
-          :value-from="0"
-          animation
-          show-group-separator
-        >
-          <template #suffix>
-            <span class="unit">{{ $t('workplace.pecs') }}</span>
-          </template>
-        </a-statistic>
-      </a-space>
-    </a-grid-item>
-    <a-grid-item
-      class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 8 }"
       style="border-right: none"
     >
-      <a-space>
-        <a-avatar :size="54" class="col-avatar">
-          <img
-            alt="avatar"
-            src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/c8b36e26d2b9bb5dbf9b74dd6d7345af.svg~tplv-49unhts6dw-image.image"
-          />
-        </a-avatar>
-        <a-statistic
-          :title="$t('workplace.newFromYesterday')"
-          :value="2.8"
-          :precision="1"
-          :value-from="0"
-          animation
-        >
-          <template #suffix> % <icon-caret-up class="up-icon" /> </template>
-        </a-statistic>
-      </a-space>
+      <a-typography-text type="primary">
+        能源市场指标(13)
+        <a-divider direction="vertical" />
+        宏观经济变量(7)
+        <a-divider direction="vertical" />
+        国际市场溢出效应(1)
+        <a-divider direction="vertical" />
+        环境指标(1)
+        <a-divider direction="vertical" />
+        公众情绪(1)
+        <a-divider direction="vertical" />
+        <a-link href="https://economicpolicyuncertaintyinchina.weebly.com/">
+          政策不确定性(4)
+        </a-link>
+      </a-typography-text>
+      <a-typography-text
+        :ellipsis="{
+          suffix: '',
+          rows: 1,
+          expandable: true,
+        }"
+        >Oil Price、NG Price、Coal Price、Brent、NEWC Spot、BOCE
+        CC、HS300、INE、Henry Hub、NYMEX NG、ICE NG、Coal Futures、Coking
+        Futures.
+        <a-divider direction="vertical" />
+        STOXX50、USD、DAX、FTSE100、CAC40、DJIA、S&P500.
+        <a-divider direction="vertical" />EUA
+        <a-divider direction="vertical" />AQI
+        <a-divider direction="vertical" />BSI
+        <a-divider direction="vertical" />EPU、FPU、TPU、ECPU
+      </a-typography-text>
+      <a-typography-text type="primary"></a-typography-text>
     </a-grid-item>
     <a-grid-item :span="24">
       <a-divider class="panel-border" />
@@ -102,29 +114,37 @@
   </a-grid>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+  const carbonMarketCount = 4;
+  const externalFactorsCount = 29;
+</script>
 
 <style lang="less" scoped>
   .arco-grid.panel {
     margin-bottom: 0;
     padding: 16px 20px 0 20px;
   }
+
   .panel-col {
     padding-left: 43px;
     border-right: 1px solid rgb(var(--gray-2));
   }
+
   .col-avatar {
     margin-right: 12px;
     background-color: var(--color-fill-2);
   }
+
   .up-icon {
     color: rgb(var(--red-6));
   }
+
   .unit {
     margin-left: 8px;
     color: rgb(var(--gray-8));
     font-size: 12px;
   }
+
   :deep(.panel-border) {
     margin: 4px 0 0 0;
   }

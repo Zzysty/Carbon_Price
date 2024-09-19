@@ -6,10 +6,10 @@
       :body-style="{
         paddingTop: '20px',
       }"
-      :title="$t('workplace.contentData')"
+      :title="$t('workplace.contentDataTj')"
     >
       <template #extra>
-        <a-link>{{ $t('workplace.viewMore') }}</a-link>
+        <a-link href="/list/search-table-tj">{{ $t('workplace.detail') }}</a-link>
       </template>
       <Chart height="289px" :option="chartOption" />
     </a-card>
@@ -20,7 +20,7 @@
   import { ref } from 'vue';
   import { graphic } from 'echarts';
   import useLoading from '@/hooks/loading';
-  import { queryContentData, ContentDataRecord } from '@/api/dashboard';
+  import { ContentDataRecord, queryContentDataTj } from '@/api/dashboard';
   import useChartOption from '@/hooks/chart-option';
   import { ToolTipFormatterParams } from '@/types/echarts';
   import { AnyObject } from '@/types/global';
@@ -38,6 +38,7 @@
       },
     };
   }
+
   const { loading, setLoading } = useLoading(true);
   const xAxis = ref<string[]>([]);
   const chartsData = ref<number[]>([]);
@@ -57,9 +58,9 @@
         type: 'category',
         offset: 2,
         data: xAxis.value,
-        boundaryGap: false,
+        // boundaryGap: true, // 折线图不显示左侧的0刻度
         axisLabel: {
-          color: '#4E5969',
+          // color: '#4E5969',
           formatter(value: number, idx: number) {
             if (idx === 0) return '';
             if (idx === xAxis.value.length - 1) return '';
@@ -73,11 +74,10 @@
           show: false,
         },
         splitLine: {
-          show: true,
+          show: false,
           interval: (idx: number) => {
             if (idx === 0) return false;
-            if (idx === xAxis.value.length - 1) return false;
-            return true;
+            return idx !== xAxis.value.length - 1;
           },
           lineStyle: {
             color: '#E5E8EF',
@@ -99,7 +99,7 @@
         axisLabel: {
           formatter(value: any, idx: number) {
             if (idx === 0) return value;
-            return `${value}k`;
+            return `${value}`;
           },
         },
         splitLine: {
@@ -116,22 +116,26 @@
           const [firstElement] = params as ToolTipFormatterParams[];
           return `<div>
             <p class="tooltip-title">${firstElement.axisValueLabel}</p>
-            <div class="content-panel"><span>总内容量</span><span class="tooltip-value">${(
-              Number(firstElement.value) * 10000
-            ).toLocaleString()}</span></div>
+            <div class="content-panel">
+              <span>成交均价</span>
+              <span class="tooltip-value">
+                ￥${Number(firstElement.value).toLocaleString()}元
+              </span>
+            </div>
           </div>`;
         },
         className: 'echarts-tooltip-diy',
       },
-      graphic: {
-        elements: graphicElements.value,
-      },
+      // graphic: {
+      //   elements: graphicElements.value,
+      // },
       series: [
         {
+          name: '天津',
           data: chartsData.value,
           type: 'line',
           smooth: true,
-          // symbol: 'circle',
+          symbol: 'circle',
           symbolSize: 12,
           emphasis: {
             focus: 'series',
@@ -177,16 +181,18 @@
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: chartData } = await queryContentData();
-      chartData.forEach((el: ContentDataRecord, idx: number) => {
+      const { data: chartData } = await queryContentDataTj();
+
+      chartData.items.forEach((el: ContentDataRecord, idx: number) => {
         xAxis.value.push(el.x);
         chartsData.value.push(el.y);
-        if (idx === 0) {
-          graphicElements.value[0].style.text = el.x;
-        }
-        if (idx === chartData.length - 1) {
-          graphicElements.value[1].style.text = el.x;
-        }
+
+        // if (idx === 0) {
+        //   graphicElements.value[0].style.text = el.x;
+        // }
+        // if (idx === chartData.length - 1) {
+        //   graphicElements.value[1].style.text = el.x;
+        // }
       });
     } catch (err) {
       // you can report use errorHandler or other

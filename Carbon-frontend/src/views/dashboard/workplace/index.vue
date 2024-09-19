@@ -4,7 +4,24 @@
       <div class="panel">
         <Banner />
         <DataPanel />
-        <ContentChart />
+        <a-tabs default-active-key="1" :trigger="'hover'" lazy-load>
+          <a-tab-pane key="1" title="湖北">
+            <contentChartHb />
+          </a-tab-pane>
+          <a-tab-pane key="2" title="广东">
+            <contentChartGd />
+          </a-tab-pane>
+          <a-tab-pane key="3" title="天津">
+            <contentChartTj />
+          </a-tab-pane>
+          <a-tab-pane key="4" title="北京">
+            <contentChartBj />
+          </a-tab-pane>
+        </a-tabs>
+        <!--        <contentChartHb />-->
+        <!--        <contentChartGd />-->
+        <!--        <contentChartTj />-->
+        <!--        <contentChartBj />-->
       </div>
       <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
         <a-grid-item
@@ -44,7 +61,7 @@
 <script lang="ts" setup>
   import Banner from './components/banner.vue';
   import DataPanel from './components/data-panel.vue';
-  import ContentChart from './components/content-chart.vue';
+  import ContentChartHb from './components/content-chart-hb.vue';
   import PopularContent from './components/popular-content.vue';
   import CategoriesPercent from './components/categories-percent.vue';
   import RecentlyVisited from './components/recently-visited.vue';
@@ -52,6 +69,9 @@
   import Announcement from './components/announcement.vue';
   import Carousel from './components/carousel.vue';
   import Docs from './components/docs.vue';
+  import ContentChartGd from './components/content-chart-gd.vue';
+  import ContentChartTj from './components/content-chart-tj.vue';
+  import ContentChartBj from './components/content-chart-bj.vue';
 </script>
 
 <script lang="ts">
@@ -83,13 +103,16 @@
     border-radius: 4px;
     overflow: auto;
   }
+
   :deep(.panel-border) {
     margin-bottom: 0;
     border-bottom: 1px solid rgb(var(--gray-2));
   }
+
   .moduler-wrap {
     border-radius: 4px;
     background-color: var(--color-bg-2);
+
     :deep(.text) {
       font-size: 12px;
       text-align: center;
@@ -106,11 +129,13 @@
           margin-bottom: 0;
         }
       }
+
       &:hover {
         .icon {
           color: rgb(var(--arcoblue-6));
           background-color: #e8f3ff;
         }
+
         .text {
           color: rgb(var(--arcoblue-6));
         }
@@ -138,6 +163,7 @@
     .container {
       display: block;
     }
+
     .right-side {
       // display: none;
       width: 100%;

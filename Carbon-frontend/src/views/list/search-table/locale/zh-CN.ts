@@ -1,5 +1,9 @@
 export default {
-  'menu.list.searchTable': '查询表格',
+  'menu.list': '数据列表',
+  'menu.list.Hubei': '湖北',
+  'menu.list.Beijing': '北京',
+  'menu.list.Guangdong': '广东',
+  'menu.list.Tianjin': '天津',
   'searchTable.form.number': '集合编号',
   'searchTable.form.number.placeholder': '请输入集合编号',
   'searchTable.form.name': '集合名称',

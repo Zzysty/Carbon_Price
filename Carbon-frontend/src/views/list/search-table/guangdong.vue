@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.Hubei']" />
-    <a-card class="general-card" :title="$t('menu.list.Hubei')">
+    <Breadcrumb :items="['menu.list', 'menu.list.Guangdong']" />
+    <a-card class="general-card" :title="$t('menu.list.Guangdong')">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -149,52 +149,8 @@
         :size="size"
         column-resizable
       >
-        <!--        <template #index="{ rowIndex }">-->
-        <!--          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}-->
-        <!--        </template>-->
-        <template #contentType="{ record }">
-          <a-space>
-            <a-avatar
-              v-if="record.contentType === 'img'"
-              :size="16"
-              shape="square"
-            >
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar
-              v-else-if="record.contentType === 'horizontalVideo'"
-              :size="16"
-              shape="square"
-            >
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77721e365eb2ab786c889682cbc721c1.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar v-else :size="16" shape="square">
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/ea8b09190046da0ea7e070d83c5d1731.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
-          </a-space>
-        </template>
         <template #filterType="{ record }">
           {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
-        </template>
-        <template #status="{ record }">
-          <span v-if="record.status === 'offline'" class="circle"></span>
-          <span v-else class="circle pass"></span>
-          {{ $t(`searchTable.form.status.${record.status}`) }}
-        </template>
-        <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
         </template>
       </a-table>
     </a-card>
@@ -208,10 +164,8 @@
   import {
     CarbonMarketParams,
     GDCarbonMarketRecord,
-    HBCarbonMarketRecord,
     queryGuangdongList,
-    queryHubeiList,
-    uploadHubeiFile,
+    uploadGuangdongFile,
   } from '@/api/list';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
@@ -230,7 +184,7 @@
   };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const renderData = ref<HBCarbonMarketRecord[]>([]);
+  const renderData = ref<GDCarbonMarketRecord[]>([]);
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
@@ -289,19 +243,6 @@
     {
       title: '产品',
       dataIndex: 'product',
-      filterable: {
-        filters: [
-          {
-            text: 'HBEA',
-            value: 'HBEA',
-          },
-          {
-            text: 'HBEA2022',
-            value: 'HBEA2022',
-          },
-        ],
-        filter: (value, row) => row.product.includes(value),
-      },
     },
     {
       title: '日期',
@@ -311,11 +252,23 @@
       },
     },
     {
-      title: '最新',
-      dataIndex: 'latest_price',
+      title: '开盘价',
+      dataIndex: 'opening_price',
     },
     {
-      title: '涨跌幅',
+      title: '收盘价',
+      dataIndex: 'closing_price',
+    },
+    {
+      title: '最高价',
+      dataIndex: 'highest_price',
+    },
+    {
+      title: '最低价',
+      dataIndex: 'lowest_price',
+    },
+    {
+      title: '涨跌',
       dataIndex: 'price_change',
       filterable: {
         filters: [
@@ -340,43 +293,41 @@
       },
     },
     {
-      title: '最高',
-      dataIndex: 'highest_price',
+      title: '涨跌幅',
+      dataIndex: 'price_change_percentage',
+      filterable: {
+        filters: [
+          {
+            text: '正', // 涨跌幅大于 0
+            value: 'positive',
+          },
+          {
+            text: '负', // 涨跌幅小于 0
+            value: 'negative',
+          },
+        ],
+        filter: (value, record) => {
+          // 处理值为数组的情况
+          if (Array.isArray(value)) {
+            return value.some((v) =>
+              filterByPriceChange(v, record.price_change)
+            );
+          }
+          return filterByPriceChange(value, record.price_change);
+        },
+      },
     },
     {
-      title: '最低',
-      dataIndex: 'lowest_price',
-    },
-    {
-      title: '成交量',
+      title: '成交数量',
       dataIndex: 'volume',
     },
     {
-      title: '成交额',
+      title: '成交金额',
       dataIndex: 'turnover',
     },
-    {
-      title: '昨收盘价',
-      dataIndex: 'previous_close_price',
-    },
-    // {
-    //   title: '操作',
-    //   dataIndex: 'operations',
-    //   slotName: 'operations',
-    // },
   ]);
-  // const productOptions = computed<SelectOptionData[]>(() => [
-  //   {
-  //     label: 'HBEA',
-  //     value: 'HBEA',
-  //   },
-  //   {
-  //     label: 'HBEA2022',
-  //     value: 'HBEA2022',
-  //   },
-  // ]);
   // 缓存键
-  const CACHE_KEY = 'hb_carbon_market_data';
+  const CACHE_KEY = 'gd_carbon_market_data';
   // 提交查询请求
   const fetchData = async (params: CarbonMarketParams) => {
     setLoading(true);
@@ -406,7 +357,7 @@
         content: '正在请求最新数据',
       });
       // 无缓存发送请求
-      const { data } = await queryHubeiList(params);
+      const { data } = await queryGuangdongList(params);
 
       // 将返回数据缓存到 localStorage
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
@@ -532,7 +483,7 @@
         content: '文件上传成功',
       });
       // 调用封装的 API 函数进行文件上传
-      const res = await uploadHubeiFile(fileItem);
+      const res = await uploadGuangdongFile(fileItem);
       // eslint-disable-next-line no-console
       console.log(res);
       if (res.code === 200) {
