@@ -27,7 +27,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         return error_response("Username already registered", code=400)
 
     # 创建用户
-    new_user = crud.create_user(
+    crud.create_user(
         db=db,
         username=user.username,
         password=user.password,

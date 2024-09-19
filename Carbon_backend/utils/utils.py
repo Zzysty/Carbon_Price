@@ -22,3 +22,28 @@ def clean_numeric_column(df: pd.DataFrame, columns: list):
         df[column] = pd.to_numeric(df[column], errors='coerce')
 
     return df
+
+
+def fill_null_with_average(records):
+    """
+    对返回的记录中的null值进行前后值平均处理
+    """
+    filled_records = []
+    for i, record in enumerate(records):
+        date, price = record
+        if price is None:
+            # 查找前一个和后一个非null的值
+            prev_price = next((records[j][1] for j in range(i - 1, -1, -1) if records[j][1] is not None), None)
+            next_price = next((records[j][1] for j in range(i + 1, len(records)) if records[j][1] is not None), None)
+
+            # 如果前后都存在值，计算平均值
+            if prev_price is not None and next_price is not None:
+                price = (prev_price + next_price) / 2
+            elif prev_price is not None:
+                price = prev_price
+            elif next_price is not None:
+                price = next_price
+
+        filled_records.append((date, price))
+
+    return filled_records

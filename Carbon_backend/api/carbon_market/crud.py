@@ -127,13 +127,13 @@ def get_columns_map(market: str) -> dict:
 
 
 # 查询全量数据，根据查询条件
-def get_hb_data(db: Session, date_range: Optional[List[date]] = None):
-    query = db.query(CarbonMarketHB)
+def get_data(db: Session, table_model, date_range: Optional[List[date]] = None):
+    query = db.query(table_model)
 
     # 按日期范围过滤
     if date_range and len(date_range) == 2:
         start_date, end_date = date_range
-        query = query.filter(and_(CarbonMarketHB.date >= start_date, CarbonMarketHB.date <= end_date))
+        query = query.filter(and_(table_model.date >= start_date, table_model.date <= end_date))
 
     items = query.all()  # 获取查询结果列表
     total = len(items)  # 计算总数
