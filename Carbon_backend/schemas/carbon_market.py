@@ -20,6 +20,7 @@ class HBCarbonMarketResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        orm_mode = True  # 启用 orm_mode
 
 
 class GDCarbonMarketResponse(BaseModel):
@@ -38,6 +39,7 @@ class GDCarbonMarketResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        orm_mode = True
 
 
 class TJCarbonMarketResponse(BaseModel):
@@ -53,6 +55,7 @@ class TJCarbonMarketResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        orm_mode = True
 
 
 class BJCarbonMarketResponse(BaseModel):
@@ -65,6 +68,7 @@ class BJCarbonMarketResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        orm_mode = True
 
 
 # 查询返回类,包含总条数
@@ -73,6 +77,8 @@ class CarbonMarketResponseWithTotal(BaseModel):
     items: Union[List[HBCarbonMarketResponse], List[GDCarbonMarketResponse], List[TJCarbonMarketResponse], List[
         BJCarbonMarketResponse]]
 
+    class Config:
+        orm_mode = True
 
 # 查询请求类
 class CarbonMarketHBQueryParams(BaseModel):
