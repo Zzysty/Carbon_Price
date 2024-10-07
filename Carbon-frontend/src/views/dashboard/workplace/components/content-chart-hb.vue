@@ -9,7 +9,9 @@
       :title="$t('workplace.contentDataHb')"
     >
       <template #extra>
-        <a-link href="/list/search-table-hb">{{ $t('workplace.detail') }}</a-link>
+        <a-link href="/list/search-table-hb">{{
+          $t('workplace.detail')
+        }}</a-link>
       </template>
       <Chart height="289px" :option="chartOption" />
     </a-card>
@@ -20,7 +22,7 @@
   import { ref } from 'vue';
   import { graphic } from 'echarts';
   import useLoading from '@/hooks/loading';
-  import { ContentDataRecord, queryContentDataHb } from "@/api/dashboard";
+  import { ContentDataRecord, queryContentDataHb } from '@/api/dashboard';
   import useChartOption from '@/hooks/chart-option';
   import { ToolTipFormatterParams } from '@/types/echarts';
   import { AnyObject } from '@/types/global';
@@ -183,7 +185,7 @@
     try {
       const { data: chartData } = await queryContentDataHb();
 
-      chartData.items.forEach((el: ContentDataRecord, idx: number) => {
+      chartData.items.forEach((el: ContentDataRecord) => {
         xAxis.value.push(el.x);
         chartsData.value.push(el.y);
 
