@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from api.user import routes as user_routes
 from api.carbon_market import routes as carbon_market_routes
+from api.ai import routes as ai_routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -25,4 +26,7 @@ async def root():
 app.include_router(user_routes.router, prefix="/api/user", tags=["User"])
 
 """上传文件导入数据接口"""
-app.include_router(carbon_market_routes.router, prefix="/api/carbon_market", tags=["Upload Carbon Market"])
+app.include_router(carbon_market_routes.router, prefix="/api/carbon_market", tags=["Carbon Market"])
+
+"""AI 接口"""
+app.include_router(ai_routes.router, prefix="/api/ai", tags=["AI"])
