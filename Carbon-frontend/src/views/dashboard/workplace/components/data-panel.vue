@@ -2,7 +2,7 @@
   <a-grid :cols="24" :row-gap="16" class="panel">
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 4 }"
+      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 5 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -26,7 +26,7 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 8 }"
+      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 19 }"
     >
       <a-space :size="'mini'">
         <a-link href="https://www.hbets.cn/list_51.html" icon>
@@ -48,7 +48,7 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 4 }"
+      :span="{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6, xxl: 5 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -72,7 +72,7 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 8 }"
+      :span="{ xs: 18, sm: 18, md: 18, lg: 18, xl: 18, xxl: 18 }"
       style="border-right: none"
     >
       <a-typography-text type="primary">
