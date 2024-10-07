@@ -145,7 +145,7 @@
         :pagination="pagination as PaginationProps"
         :columns="(cloneColumns as TableColumnData[])"
         :data="renderData"
-        :bordered="true"
+        :bordered="false"
         :size="size"
         column-resizable
       >
