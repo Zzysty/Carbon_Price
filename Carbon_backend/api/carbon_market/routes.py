@@ -1,3 +1,5 @@
+from datetime import timedelta, date
+
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy import asc
 from sqlalchemy.orm import Session
@@ -6,7 +8,8 @@ from api.carbon_market.crud import get_columns_map, process_file, get_data
 from db.session import get_db
 from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ
 from schemas.carbon_market import CarbonMarketHBQueryParams, CarbonMarketResponseWithTotal, \
-    CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList
+    CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList, HBCarbonMarketResponse, GDCarbonMarketResponse, \
+    TJCarbonMarketResponse, BJCarbonMarketResponse
 from schemas.response import success_response, error_response, ResponseBase
 from utils.utils import fill_null_with_average
 
@@ -82,6 +85,15 @@ def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: 
     return success_response(data=data)
 
 
+# 市场与碳价格字段的映射
+market_price_field_map = {
+    'hb': 'latest_price',
+    'gd': 'closing_price',
+    'tj': 'average_price_auction',
+    'bj': 'average_price',
+}
+
+
 @router.get("/content-data/{market}", response_model=ResponseBase[CarbonMarketDatePriceResponseList])
 def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
     """
@@ -91,14 +103,6 @@ def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
     table_model = market_to_table.get(market)
     if not table_model:
         return error_response(message="Invalid market type", code=404)
-
-    # 市场与碳价格字段的映射
-    market_price_field_map = {
-        'hb': 'latest_price',
-        'gd': 'closing_price',
-        'tj': 'average_price_auction',
-        'bj': 'average_price',
-    }
 
     # 获取市场对应的价格字段
     price_field = market_price_field_map.get(market)
@@ -124,3 +128,50 @@ def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
     data = [CarbonMarketDatePriceResponse(x=record[0], y=record[1]) for record in records]
 
     return success_response(data={"total": len(data), "items": data})
+
+
+# 市场与响应模型映射
+market_response_model_map = {
+    'hb': HBCarbonMarketResponse,
+    'gd': GDCarbonMarketResponse,
+    'tj': TJCarbonMarketResponse,
+    'bj': BJCarbonMarketResponse,
+}
+
+
+@router.get("/latest", response_model=ResponseBase[CarbonMarketResponseWithTotal])
+def query_market_daily_data(db: Session = Depends(get_db)):
+    """
+    查询四个市场的最新数据，直到满足四个市场都有数据
+    """
+    today = date.today()
+    markets_data = []
+    max_attempts = 30  # 最多尝试30天，避免无限循环
+
+    # 对于每个市场查询最新的数据
+    for market, table_model in market_to_table.items():
+        response_model = market_response_model_map.get(market)
+
+        if not response_model:
+            return error_response(message="Market not supported", code=404)
+
+        # 尝试获取每个市场的数据
+        attempts = 0
+        while attempts < max_attempts:
+            # 查询最新记录
+            record = db.query(table_model).order_by(table_model.date.desc()).first()
+
+            # 如果找到了数据，存入 markets_data
+            if record:
+                markets_data.append(response_model.from_orm(record))
+                break
+
+            # 没有找到数据，尝试前一天
+            attempts += 1
+
+    # 如果没有找到四个市场的数据，返回错误
+    if len(markets_data) != len(market_to_table):
+        return error_response(message="Failed to find data for all markets", code=404)
+
+    # 返回四个市场的数据
+    return success_response(data={"total": len(markets_data), "items": markets_data})
