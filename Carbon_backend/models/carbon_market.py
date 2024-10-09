@@ -54,3 +54,17 @@ class CarbonMarketBJ(Base):
     average_price = Column(DECIMAL(10, 2))
     turnover = Column(DECIMAL(15, 2))
 
+class OtherFactors(Base):
+    __tablename__ = 'other_factors'
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    date = Column(Date)
+    gas_price = Column(DECIMAL(10, 4))
+    coal_price = Column(DECIMAL(10, 2))
+    oil_price = Column(DECIMAL(10, 2))
+    hs300 = Column(DECIMAL(10, 2))
+    aql_sh = Column(Integer)
+    aql_gd = Column(Integer)
+    aql_hb = Column(Integer)
+    si = Column(DECIMAL(10, 2))
+    eua_price = Column(DECIMAL(10, 2))
+

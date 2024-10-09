@@ -4,12 +4,11 @@ from typing import Optional, List
 
 import numpy as np
 import pandas as pd
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from models import CarbonMarketHB
 from schemas.response import success_response, error_response
 from utils.utils import clean_numeric_column
 
@@ -66,13 +65,12 @@ async def process_file(file: UploadFile, db: Session, columns: dict, table_model
         new_data = df[~df['date'].isin(existing_dates)]
 
         if new_data.empty:
-            return success_response(None, "No new data.")
+            return error_response("No new data", 400)
 
         # 导入新数据
         import_data_to_table(db, new_data, table_model)
 
         return success_response({"file_size": len(new_data)}, f"{table_model.__tablename__} Success")
-
     except pd.errors.ParserError as e:
         return error_response(f"Pandas excel error: {str(e)}", code=401)
     except SQLAlchemyError as e:
@@ -121,6 +119,18 @@ def get_columns_map(market: str) -> dict:
             'volume': 'volume',
             'average_price': 'average_price',
             'turnover': 'turnover',
+        },
+        'factors': {
+            'date': 'date',
+            'gas_price': 'gas_price',
+            'coal_price': 'coal_price',
+            'oil_price': 'oil_price',
+            'hs300': 'hs300',
+            'aql_hb': 'aql_hb',
+            'aql_gd': 'aql_gd',
+            'aql_sh': 'aql_sh',
+            'si': 'si',
+            'eua_price': 'eua_price',
         },
     }
     return column_maps.get(market, {})

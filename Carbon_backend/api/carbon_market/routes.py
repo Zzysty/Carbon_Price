@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from api.carbon_market.crud import get_columns_map, process_file, get_data
 from db.session import get_db
-from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ
+from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, OtherFactors
 from schemas.carbon_market import CarbonMarketHBQueryParams, CarbonMarketResponseWithTotal, \
     CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList, HBCarbonMarketResponse, GDCarbonMarketResponse, \
     TJCarbonMarketResponse, BJCarbonMarketResponse
@@ -14,6 +14,16 @@ from schemas.response import success_response, error_response, ResponseBase
 from utils.utils import fill_null_with_average
 
 router = APIRouter()
+
+
+@router.post("/upload/factors")
+async def upload_factors(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    上传并导入外部因素数据
+    """
+    columns = get_columns_map('factors')
+    table_model = OtherFactors
+    return await process_file(file, db, columns, table_model)
 
 
 @router.post("/upload/hb")
