@@ -1,5 +1,6 @@
 export default {
   'menu.list': '数据列表',
+  'menu.list.Factors': '其他因素',
   'menu.list.Hubei': '湖北',
   'menu.list.Beijing': '北京',
   'menu.list.Guangdong': '广东',

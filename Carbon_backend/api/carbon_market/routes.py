@@ -9,7 +9,7 @@ from db.session import get_db
 from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, OtherFactors
 from schemas.carbon_market import CarbonMarketHBQueryParams, CarbonMarketResponseWithTotal, \
     CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList, HBCarbonMarketResponse, GDCarbonMarketResponse, \
-    TJCarbonMarketResponse, BJCarbonMarketResponse
+    TJCarbonMarketResponse, BJCarbonMarketResponse, CarbonMarketOtherFactorsResponse
 from schemas.response import success_response, error_response, ResponseBase
 from utils.utils import fill_null_with_average
 
@@ -72,14 +72,15 @@ market_to_table = {
     'hb': CarbonMarketHB,
     'gd': CarbonMarketGD,
     'tj': CarbonMarketTJ,
-    'bj': CarbonMarketBJ
+    'bj': CarbonMarketBJ,
+    'factors': OtherFactors,
 }
 
 
 @router.post("/{market}", response_model=ResponseBase[CarbonMarketResponseWithTotal])
 def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: Session = Depends(get_db)):
     """
-    通用查询接口，支持不同的市场
+    通用查询接口，支持不同的市场，补充外部因素
     """
     # 根据路径参数中的市场标识，确定表模型
     table_model = market_to_table.get(market)
@@ -146,41 +147,33 @@ market_response_model_map = {
     'gd': GDCarbonMarketResponse,
     'tj': TJCarbonMarketResponse,
     'bj': BJCarbonMarketResponse,
+    'factors': CarbonMarketOtherFactorsResponse,
 }
 
 
 @router.get("/latest", response_model=ResponseBase[CarbonMarketResponseWithTotal])
 def query_market_daily_data(db: Session = Depends(get_db)):
     """
-    查询四个市场的最新数据，直到满足四个市场都有数据
+    查询四个市场的最新数据
     """
-    today = date.today()
     markets_data = []
-    max_attempts = 30  # 最多尝试30天，避免无限循环
 
     # 对于每个市场查询最新的数据
     for market, table_model in market_to_table.items():
         response_model = market_response_model_map.get(market)
 
-        if not response_model:
-            return error_response(message="Market not supported", code=404)
-
-        # 尝试获取每个市场的数据
-        attempts = 0
-        while attempts < max_attempts:
+        if response_model:
             # 查询最新记录
             record = db.query(table_model).order_by(table_model.date.desc()).first()
 
             # 如果找到了数据，存入 markets_data
             if record:
                 markets_data.append(response_model.from_orm(record))
-                break
-
-            # 没有找到数据，尝试前一天
-            attempts += 1
+        else:
+            return error_response(message="Market not supported", code=404)
 
     # 如果没有找到四个市场的数据，返回错误
-    if len(markets_data) != len(market_to_table):
+    if not markets_data:
         return error_response(message="Failed to find data for all markets", code=404)
 
     # 返回四个市场的数据

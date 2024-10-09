@@ -52,6 +52,16 @@ const LIST: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'search-table-other', // The midline path complies with SEO specifications
+      name: 'SearchTableOther',
+      component: () => import('@/views/list/search-table/factors.vue'),
+      meta: {
+        locale: 'menu.list.Factors',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    }
     // {
     //   path: 'card',
     //   name: 'Card',

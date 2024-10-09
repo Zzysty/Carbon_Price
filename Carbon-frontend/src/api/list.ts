@@ -2,6 +2,21 @@ import axios from "axios";
 import type { DescData } from "@arco-design/web-vue/es/descriptions/interface";
 import { Notification } from "@arco-design/web-vue";
 
+// 外部因素
+export interface OtherFactorsRecord {
+  id: string;
+  date: Date;
+  gas_price: number;
+  coal_price: number;
+  oil_price: number;
+  hs300: number;
+  aql_sh: number;
+  aql_gd: number;
+  aql_hb: number;
+  si: number;
+  eua_price: number;
+}
+
 // 湖北碳市场数据类型
 export interface HBCarbonMarketRecord {
   id: string;
@@ -52,6 +67,11 @@ export interface BJCarbonMarketRecord {
   turnover: number;
 }
 
+export interface OtherFactorsListRes {
+  items: OtherFactorsRecord[];
+  total: number;
+}
+
 export interface HBCarbonMarketListRes {
   items: HBCarbonMarketRecord[];
   total: number;
@@ -76,6 +96,11 @@ export interface CarbonMarketParams {
   dateRange?: [string, string] | any;
 }
 
+// 请求其他因素数据
+export function queryOtherFactorsList(params: CarbonMarketParams) {
+  return axios.post<OtherFactorsListRes>('/api/carbon_market/factors', params);
+}
+
 // 请求湖北碳市场数据
 export function queryHubeiList(params: CarbonMarketParams) {
   return axios.post<HBCarbonMarketListRes>('/api/carbon_market/hb', params);
@@ -94,6 +119,17 @@ export function queryTianjinList(params: CarbonMarketParams) {
 // 请求湖北碳市场数据
 export function queryBeijingList(params: CarbonMarketParams) {
   return axios.post<BJCarbonMarketListRes>('/api/carbon_market/bj', params);
+}
+
+// 上传外部因素excel
+export function uploadOtherFactors(fileItem: any) {
+  const formData = new FormData();
+  formData.append('file', fileItem.file);
+  return axios.post('/api/carbon_market/upload/factors', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
 
 // 上传湖北碳市场数据excel
