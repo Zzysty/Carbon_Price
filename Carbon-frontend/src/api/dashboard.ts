@@ -1,5 +1,11 @@
 import axios from 'axios';
 import type { TableData } from '@arco-design/web-vue/es/table/interface';
+import {
+  BJCarbonMarketRecord,
+  GDCarbonMarketRecord,
+  HBCarbonMarketRecord,
+  TJCarbonMarketRecord,
+} from '@/api/list';
 
 export interface ContentDataRecord {
   x: Date;
@@ -39,13 +45,18 @@ export function queryContentDataBj() {
   );
 }
 
+// 定义通用的 CarbonMarketRecord 类型
+export type CarbonMarketRecord =
+  | HBCarbonMarketRecord
+  | GDCarbonMarketRecord
+  | TJCarbonMarketRecord
+  | BJCarbonMarketRecord;
+
 export interface PopularRecord {
-  key: number;
-  clickNumber: string;
-  title: string;
-  increases: number;
+  total: number;
+  items: CarbonMarketRecord[];
 }
 
-export function queryPopularList(params: { type: string }) {
-  return axios.get<PopularRecord[]>('/api/popular/list', { params });
+export function queryPopularList() {
+  return axios.get<PopularRecord[]>('/api/carbon_market/latest');
 }
