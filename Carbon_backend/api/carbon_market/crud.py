@@ -65,7 +65,7 @@ async def process_file(file: UploadFile, db: Session, columns: dict, table_model
         new_data = df[~df['date'].isin(existing_dates)]
 
         if new_data.empty:
-            return error_response("No new data", 400)
+            return error_response("No new data", 200)
 
         # 导入新数据
         import_data_to_table(db, new_data, table_model)

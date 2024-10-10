@@ -5,6 +5,24 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 
 
+class CarbonMarketOtherFactorsResponse(BaseModel):
+    """外部因素返回类"""
+    id: str
+    date: Optional[date]
+    gas_price: Optional[Decimal]
+    coal_price: Optional[Decimal]
+    oil_price: Optional[Decimal]
+    hs300: Optional[Decimal]
+    aql_sh: Optional[int]
+    aql_gd: Optional[int]
+    aql_hb: Optional[int]
+    si: Optional[Decimal]
+    eua_price: Optional[Decimal]
+
+    class Config:
+        from_attributes = True
+        orm_mode = True  # 启用 orm_mode
+
 class HBCarbonMarketResponse(BaseModel):
     """湖北碳市场返回类"""
     id: str

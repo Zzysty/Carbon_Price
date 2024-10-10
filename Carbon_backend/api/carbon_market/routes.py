@@ -150,16 +150,20 @@ market_response_model_map = {
     'factors': CarbonMarketOtherFactorsResponse,
 }
 
-
 @router.get("/latest", response_model=ResponseBase[CarbonMarketResponseWithTotal])
 def query_market_daily_data(db: Session = Depends(get_db)):
     """
     查询四个市场的最新数据
     """
+    global unified_record
     markets_data = []
 
     # 对于每个市场查询最新的数据
     for market, table_model in market_to_table.items():
+        # 跳过不需要返回的市场
+        if market == 'factors':
+            continue
+
         response_model = market_response_model_map.get(market)
 
         if response_model:
@@ -168,7 +172,28 @@ def query_market_daily_data(db: Session = Depends(get_db)):
 
             # 如果找到了数据，存入 markets_data
             if record:
-                markets_data.append(response_model.from_orm(record))
+                record_dict = response_model.from_orm(record).dict()
+
+                # 根据市场对字段进行统一处理
+                if market in ['hb', 'gd']:
+                    unified_record = {
+                        "market": "湖北" if market == 'hb' else "广东",
+                        "date": record_dict.get("date"),
+                        "price": record_dict.get("latest_price") or record_dict.get("closing_price"),
+                        "volume": record_dict.get("volume"),
+                        "turnover": record_dict.get("turnover"),
+                        "price_change": record_dict.get("price_change")
+                    }
+                elif market in ['tj', 'bj']:
+                    unified_record = {
+                        "market": "天津" if market == 'tj' else "北京",
+                        "date": record_dict.get("date"),
+                        "price": record_dict.get("average_price_auction") or record_dict.get("average_price"),
+                        "volume": record_dict.get("volume_auction") or record_dict.get("volume"),
+                        "turnover": record_dict.get("volume_auction") or record_dict.get("turnover"),
+                        "price_change": None  # 天津和北京没有涨跌幅字段，设置为 None
+                    }
+                markets_data.append(unified_record)
         else:
             return error_response(message="Market not supported", code=404)
 
