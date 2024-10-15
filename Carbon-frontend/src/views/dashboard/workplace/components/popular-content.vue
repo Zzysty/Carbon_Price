@@ -3,15 +3,17 @@
     <a-card
       class="general-card"
       :header-style="{ paddingBottom: '0' }"
-      :body-style="{ padding: '17px 20px 21px 20px' }"
+      :body-style="{ padding: '20px' }"
+      style="margin-bottom: 10px"
     >
       <template #title> 各市场最新成交情况</template>
-      <a-space direction="vertical" :size="10" fill>
+      <a-space direction="vertical" :size="'medium'" fill>
         <a-table
           :data="renderList"
           :pagination="false"
           :bordered="false"
-          :scroll="{ x: '100%', y: '264px' }"
+          :summary="summary"
+          style="height: 300px"
         >
           <template #columns>
             <a-table-column title="市场" data-index="market" />
@@ -113,19 +115,41 @@
   import { ref } from 'vue';
   import useLoading from '@/hooks/loading';
   import { queryPopularList } from '@/api/dashboard';
-  import { TableData } from '@arco-design/web-vue/es/table/interface';
 
   const { loading, setLoading } = useLoading();
-  const renderList = ref<TableData[]>();
+  const renderList = ref<[]>([]);
+
+  // 总结行取各列平均
+  const summary = () => {
+    const total = renderList.value.reduce(
+      (acc, cur) => {
+        return {
+          price: acc.price + cur.price,
+          volume: acc.volume + cur.volume,
+          turnover: acc.turnover + cur.turnover,
+        };
+      },
+      { price: 0, volume: 0, turnover: 0 }
+    );
+    return [
+      {
+        date: '平均',
+        price: (total.price / renderList.value.length).toFixed(2),
+        volume: (total.volume / renderList.value.length).toFixed(0),
+        turnover: (total.turnover / renderList.value.length).toFixed(2),
+      },
+    ];
+  };
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const { data } = await queryPopularList();
       // eslint-disable-next-line no-console
-      console.log(data.items);
+      // console.log(data.items);
       renderList.value = data.items;
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
