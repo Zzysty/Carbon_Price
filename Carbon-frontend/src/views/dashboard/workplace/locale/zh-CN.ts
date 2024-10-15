@@ -38,6 +38,6 @@ export default {
   'workplace.popularContent.text': '文本',
   'workplace.popularContent.image': '图片',
   'workplace.popularContent.video': '视频',
-  'workplace.categoriesPercent': '内容类型占比',
+  'workplace.categoriesPercent': '各市场数据占比',
   'workplace.pecs': '个',
 };

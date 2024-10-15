@@ -7,6 +7,7 @@ import {
   TJCarbonMarketRecord,
 } from '@/api/list';
 
+// 折线图数据
 export interface ContentDataRecord {
   x: Date;
   y: number;
@@ -15,6 +16,16 @@ export interface ContentDataRecord {
 export interface ContentDataRecordListRes {
   total: number;
   items: ContentDataRecord[];
+}
+
+// 饼图数据
+export interface PieDataRecord {
+  market: string;
+  count: number;
+}
+export interface PieDataRecordListRes {
+  total: number;
+  items: PieDataRecord[];
 }
 
 // 获取湖北的日期碳价格数据
@@ -59,4 +70,8 @@ export interface PopularRecord {
 
 export function queryPopularList() {
   return axios.get<PopularRecord[]>('/api/carbon_market/latest');
+}
+
+export function queryAllCarbonMarketList() {
+  return axios.get<PieDataRecordListRes[]>('/api/carbon_market/carbon_count');
 }

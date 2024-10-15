@@ -10,7 +10,7 @@
       <template #title>
         {{ $t('workplace.categoriesPercent') }}
       </template>
-      <Chart height="310px" :option="chartOption" />
+      <Chart height="300px" :option="chartOption" />
     </a-card>
   </a-spin>
 </template>
@@ -18,15 +18,24 @@
 <script lang="ts" setup>
   import useLoading from '@/hooks/loading';
   import useChartOption from '@/hooks/chart-option';
+  import { PieDataRecord, queryAllCarbonMarketList } from '@/api/dashboard';
+  import { ref } from 'vue';
 
-  const { loading } = useLoading();
+  const { loading, setLoading } = useLoading();
+  const pieData = ref<PieDataRecord[]>([]);
+  const carbonTotal = ref<number>(0);
   const { chartOption } = useChartOption((isDark) => {
     // echarts support https://echarts.apache.org/zh/theme-builder.html
     // It's not used here
+    // 定义颜色数组，为每个市场设置不同的颜色
+    const colors = isDark
+      ? ['#3D72F6', '#A079DC', '#6CAAF5', '#F2994A', '#56CCF2']
+      : ['#249EFF', '#313CA9', '#21CCFF', '#4BC0C0', '#36A2EB'];
+
     return {
       legend: {
         left: 'center',
-        data: ['纯文本', '图文类', '视频类'],
+        data: pieData.value.map((item) => item.market),
         bottom: 0,
         icon: 'circle',
         itemWidth: 8,
@@ -48,7 +57,7 @@
             left: 'center',
             top: '40%',
             style: {
-              text: '内容量',
+              text: '数据总量',
               textAlign: 'center',
               fill: isDark ? '#ffffffb3' : '#4E5969',
               fontSize: 14,
@@ -59,7 +68,7 @@
             left: 'center',
             top: '50%',
             style: {
-              text: '928,531',
+              text: carbonTotal.value.toLocaleString(),
               textAlign: 'center',
               fill: isDark ? '#ffffffb3' : '#1D2129',
               fontSize: 16,
@@ -82,33 +91,59 @@
             borderColor: isDark ? '#232324' : '#fff',
             borderWidth: 1,
           },
-          data: [
-            {
-              value: [148564],
-              name: '纯文本',
-              itemStyle: {
-                color: isDark ? '#3D72F6' : '#249EFF',
-              },
+          data: pieData.value.map((item, index) => ({
+            value: item.count,
+            name: item.market,
+            itemStyle: {
+              color: colors[index % colors.length], // 根据市场索引设置不同的颜色
             },
-            {
-              value: [334271],
-              name: '图文类',
-              itemStyle: {
-                color: isDark ? '#A079DC' : '#313CA9',
-              },
-            },
-            {
-              value: [445694],
-              name: '视频类',
-              itemStyle: {
-                color: isDark ? '#6CAAF5' : '#21CCFF',
-              },
-            },
-          ],
+          })),
+          // data: [
+          //   {
+          //     value: [148564],
+          //     name: '纯文本',
+          //     itemStyle: {
+          //       color: isDark ? '#3D72F6' : '#249EFF',
+          //     },
+          //   },
+          //   {
+          //     value: [334271],
+          //     name: '图文类',
+          //     itemStyle: {
+          //       color: isDark ? '#A079DC' : '#313CA9',
+          //     },
+          //   },
+          //   {
+          //     value: [445694],
+          //     name: '视频类',
+          //     itemStyle: {
+          //       color: isDark ? '#6CAAF5' : '#21CCFF',
+          //     },
+          //   },
+          // ],
         },
       ],
     };
   });
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const { data } = await queryAllCarbonMarketList();
+      // eslint-disable-next-line no-console
+      console.log(data);
+      if (data) {
+        // 适配后端返回的数据
+        carbonTotal.value = data.total; // 设置总数据条数
+        pieData.value = data.items; // 设置饼图数据
+      }
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData();
 </script>
 
 <style scoped lang="less"></style>
