@@ -4,11 +4,14 @@ from typing import Optional, List
 
 import numpy as np
 import pandas as pd
-from fastapi import UploadFile, HTTPException
+from fastapi import UploadFile
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, OtherFactors
+from schemas.carbon_market import HBCarbonMarketResponse, GDCarbonMarketResponse, TJCarbonMarketResponse, \
+    BJCarbonMarketResponse, CarbonMarketOtherFactorsResponse
 from schemas.response import success_response, error_response
 from utils.utils import clean_numeric_column
 
@@ -149,3 +152,39 @@ def get_data(db: Session, table_model, date_range: Optional[List[date]] = None):
     total = len(items)  # 计算总数
 
     return {"total": total, "items": items}
+
+
+# 根据市场类型动态选择表模型
+market_to_table = {
+    'hb': CarbonMarketHB,
+    'gd': CarbonMarketGD,
+    'tj': CarbonMarketTJ,
+    'bj': CarbonMarketBJ,
+    'factors': OtherFactors,
+}
+
+# 市场名称映射
+market_name_map = {
+    'hb': '湖北',
+    'gd': '广东',
+    'tj': '天津',
+    'bj': '北京',
+    'factors': '外部因素',
+}
+
+# 市场与碳价格字段的映射
+market_price_field_map = {
+    'hb': 'latest_price',
+    'gd': 'closing_price',
+    'tj': 'average_price_auction',
+    'bj': 'average_price',
+}
+
+# 市场与响应模型映射
+market_response_model_map = {
+    'hb': HBCarbonMarketResponse,
+    'gd': GDCarbonMarketResponse,
+    'tj': TJCarbonMarketResponse,
+    'bj': BJCarbonMarketResponse,
+    'factors': CarbonMarketOtherFactorsResponse,
+}

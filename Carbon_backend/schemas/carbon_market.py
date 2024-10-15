@@ -115,3 +115,12 @@ class CarbonMarketDatePriceResponse(BaseModel):
 class CarbonMarketDatePriceResponseList(BaseModel):
     total: int
     items: List[CarbonMarketDatePriceResponse]
+
+# 查询返回类，查询所有市场数据数目
+class CarbonAllCountResponse(BaseModel):
+    market: Optional[str]
+    count: Optional[int]
+
+class CarbonAllCountResponseList(BaseModel):
+    total: int
+    items: List[CarbonAllCountResponse]

@@ -1,15 +1,13 @@
-from datetime import timedelta, date
-
 from fastapi import APIRouter, Depends, UploadFile, File
-from sqlalchemy import asc
+from sqlalchemy import asc, func
 from sqlalchemy.orm import Session
 
-from api.carbon_market.crud import get_columns_map, process_file, get_data
+from api.carbon_market.crud import get_columns_map, process_file, get_data, market_to_table, market_price_field_map, \
+    market_response_model_map, market_name_map
 from db.session import get_db
 from models import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, OtherFactors
 from schemas.carbon_market import CarbonMarketHBQueryParams, CarbonMarketResponseWithTotal, \
-    CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList, HBCarbonMarketResponse, GDCarbonMarketResponse, \
-    TJCarbonMarketResponse, BJCarbonMarketResponse, CarbonMarketOtherFactorsResponse
+    CarbonMarketDatePriceResponse, CarbonMarketDatePriceResponseList, CarbonAllCountResponseList
 from schemas.response import success_response, error_response, ResponseBase
 from utils.utils import fill_null_with_average
 
@@ -46,7 +44,6 @@ async def upload_gd(file: UploadFile = File(...), db: Session = Depends(get_db))
     return await process_file(file, db, columns, table_model)
 
 
-# 上传并导入天津碳市场表数据
 @router.post("/upload/tj")
 async def upload_tj(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
@@ -67,16 +64,6 @@ async def upload_bj(file: UploadFile = File(...), db: Session = Depends(get_db))
     return await process_file(file, db, columns, table_model)
 
 
-# 根据市场类型动态选择表模型
-market_to_table = {
-    'hb': CarbonMarketHB,
-    'gd': CarbonMarketGD,
-    'tj': CarbonMarketTJ,
-    'bj': CarbonMarketBJ,
-    'factors': OtherFactors,
-}
-
-
 @router.post("/{market}", response_model=ResponseBase[CarbonMarketResponseWithTotal])
 def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: Session = Depends(get_db)):
     """
@@ -94,15 +81,6 @@ def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: 
         return error_response(message="No data found", code=404)
 
     return success_response(data=data)
-
-
-# 市场与碳价格字段的映射
-market_price_field_map = {
-    'hb': 'latest_price',
-    'gd': 'closing_price',
-    'tj': 'average_price_auction',
-    'bj': 'average_price',
-}
 
 
 @router.get("/content-data/{market}", response_model=ResponseBase[CarbonMarketDatePriceResponseList])
@@ -140,15 +118,6 @@ def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
 
     return success_response(data={"total": len(data), "items": data})
 
-
-# 市场与响应模型映射
-market_response_model_map = {
-    'hb': HBCarbonMarketResponse,
-    'gd': GDCarbonMarketResponse,
-    'tj': TJCarbonMarketResponse,
-    'bj': BJCarbonMarketResponse,
-    'factors': CarbonMarketOtherFactorsResponse,
-}
 
 @router.get("/latest", response_model=ResponseBase[CarbonMarketResponseWithTotal])
 def query_market_daily_data(db: Session = Depends(get_db)):
@@ -203,3 +172,19 @@ def query_market_daily_data(db: Session = Depends(get_db)):
 
     # 返回四个市场的数据
     return success_response(data={"total": len(markets_data), "items": markets_data})
+
+
+@router.get("/carbon_count", response_model=ResponseBase[CarbonAllCountResponseList])
+def carbon_num_vis(db: Session = Depends(get_db)):
+    """
+        遍历所有数据库模型类，查询各自表中数据总数以及总的数据条数
+    """
+    total_count = 0
+    table_counts = []
+
+    for market, table_model in market_to_table.items():
+        count = db.query(func.count(table_model.id)).scalar()
+        total_count += count
+        table_counts.append({"market": market_name_map.get(market, market), "count": count})
+
+    return success_response(data={"total": total_count, "items": table_counts})
