@@ -8,7 +8,7 @@ ENV = os.getenv('ENV', 'production')  # 默认为开发环境，如果线上环�
 
 if ENV == 'production':
     # 线上数据库连接配置
-    DB_USERNAME = os.getenv('DB_USERNAME', 'zzy')
+    DB_USERNAME = os.getenv('DB_USERNAME', 'root')
     DB_PASSWORD = os.getenv('DB_PASSWORD', '5586305Zzy')
     DB_HOST = os.getenv('DB_HOST', '10.35.111.172')
     DB_NAME = os.getenv('DB_NAME', 'carbon')
