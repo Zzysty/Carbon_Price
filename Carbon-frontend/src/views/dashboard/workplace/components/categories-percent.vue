@@ -129,13 +129,13 @@
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await queryAllCarbonMarketList();
+      const { data: pData } = await queryAllCarbonMarketList();
       // eslint-disable-next-line no-console
-      console.log(data);
-      if (data) {
+      // console.log(data);
+      if (pData) {
         // 适配后端返回的数据
-        carbonTotal.value = data.total; // 设置总数据条数
-        pieData.value = data.items; // 设置饼图数据
+        carbonTotal.value = pData.total; // 设置总数据条数
+        pieData.value = pData.items; // 设置饼图数据
       }
     } catch (err) {
       // you can report use errorHandler or other

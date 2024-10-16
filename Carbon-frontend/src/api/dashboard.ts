@@ -9,7 +9,7 @@ import {
 
 // 折线图数据
 export interface ContentDataRecord {
-  x: Date;
+  x: string;
   y: number;
 }
 

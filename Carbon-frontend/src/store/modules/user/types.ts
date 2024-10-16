@@ -4,7 +4,7 @@ export interface UserState {
   id?: number;
   username?: string;
   gender?: string;
-  // avatar?: string;
+  avatar?: string;
   // job?: string;
   // location?: string;
   email?: string;

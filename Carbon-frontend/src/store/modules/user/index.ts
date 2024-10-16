@@ -18,6 +18,7 @@ const useUserStore = defineStore('user', {
     username: undefined,
     gender: undefined,
     email: undefined,
+    avatar: undefined,
     user_role: '',
   }),
 

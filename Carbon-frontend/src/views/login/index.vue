@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img alt="logo" src="src/assets/logo.svg" />
+      <img alt="logo" src="@/assets/logo.svg" />
       <div class="logo-text">Carbon Price</div>
     </div>
     <LoginBanner />

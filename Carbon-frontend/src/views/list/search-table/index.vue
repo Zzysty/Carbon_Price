@@ -534,7 +534,7 @@
       // 调用封装的 API 函数进行文件上传
       const res = await uploadHubeiFile(fileItem);
       // eslint-disable-next-line no-console
-      console.log(res);
+      // console.log(res);
       if (res.code === 200) {
         if (res.data) {
           Notification.success({

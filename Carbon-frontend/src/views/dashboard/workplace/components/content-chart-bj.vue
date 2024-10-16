@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import { graphic } from 'echarts';
+  import { EChartsOption, graphic } from "echarts";
   import useLoading from '@/hooks/loading';
   import { ContentDataRecord, queryContentDataBj } from '@/api/dashboard';
   import useChartOption from '@/hooks/chart-option';
@@ -58,9 +58,9 @@
         type: 'category',
         offset: 2,
         data: xAxis.value,
-        // boundaryGap: true, // 折线图不显示左侧的0刻度
+        boundaryGap: false, // 折线图不显示左侧的0刻度
         axisLabel: {
-          // color: '#4E5969',
+          color: '#4E5969',
           formatter(value: number, idx: number) {
             if (idx === 0) return '';
             if (idx === xAxis.value.length - 1) return '';
@@ -178,6 +178,7 @@
       ],
     };
   });
+
   const fetchData = async () => {
     setLoading(true);
     try {

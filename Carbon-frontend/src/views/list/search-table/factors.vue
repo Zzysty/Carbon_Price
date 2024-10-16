@@ -421,7 +421,7 @@
   );
 
   // 上传文件的自定义请求处理逻辑
-  const handleUpload = async (option: any) => {
+  const handleUpload = async (option) => {
     setLoading(true);
     try {
       const { fileItem } = option;

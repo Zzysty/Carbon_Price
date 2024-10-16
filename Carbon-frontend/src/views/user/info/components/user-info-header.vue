@@ -5,26 +5,26 @@
         <template #trigger-icon>
           <icon-camera />
         </template>
-        <img :src="userInfo.avatar" />
+        <img :src="userInfo.avatar" alt="" />
       </a-avatar>
       <a-typography-title :heading="6" style="margin: 0">
-        {{ userInfo.name }}
+        {{ userInfo.username }}
       </a-typography-title>
       <div class="user-msg">
         <a-space :size="18">
           <div>
             <icon-user />
-            <a-typography-text>{{ userInfo.jobName }}</a-typography-text>
+            <a-typography-text>{{ userInfo.username }}</a-typography-text>
           </div>
           <div>
             <icon-home />
             <a-typography-text>
-              {{ userInfo.organizationName }}
+              {{ userInfo.username }}
             </a-typography-text>
           </div>
           <div>
             <icon-location />
-            <a-typography-text>{{ userInfo.locationName }}</a-typography-text>
+            <a-typography-text>{{ userInfo.username }}</a-typography-text>
           </div>
         </a-space>
       </div>
