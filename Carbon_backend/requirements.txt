@@ -7,3 +7,4 @@ python_jose==3.3.0
 SQLAlchemy==2.0.21
 starlette==0.38.2
 zhipuai==2.1.5.20230904
+uvicorn==0.20.0
