@@ -1,8 +1,10 @@
 from fastapi import FastAPI
-from api.user import routes as user_routes
-from api.carbon_market import routes as carbon_market_routes
-from api.ai import routes as ai_routes
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
+
+from api.ai import routes as ai_routes
+from api.carbon_market import routes as carbon_market_routes
+from api.user import routes as user_routes
 
 app = FastAPI()
 
@@ -19,6 +21,11 @@ app.add_middleware(
     allow_methods=["*"],  # 允许所有方法（GET, POST 等）
     allow_headers=["*"],  # 允许所有请求头
 )
+
+
+@app.head("/")
+async def head_root():
+    return Response(status_code=200)
 
 
 @app.get("/")

@@ -1,6 +1,5 @@
 from typing import Generic, TypeVar, Optional, Union
 
-from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from starlette.responses import JSONResponse
 
