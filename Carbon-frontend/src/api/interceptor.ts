@@ -10,19 +10,13 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
-// if (import.meta.env.VITE_API_BASE_URL) {
-//   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-//   axios.defaults.timeout = 60000;
-//   axios.defaults.withCredentials = true;
-// }
+if (import.meta.env.VITE_API_BASE_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+  axios.defaults.timeout = 60000;
+  axios.defaults.withCredentials = true;
+}
 
-const myAxios = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 60000,
-  withCredentials: true,
-});
-
-myAxios.interceptors.request.use(
+axios.interceptors.request.use(
   // @ts-ignore
   (config: AxiosRequestConfig) => {
     // let each request carry token
@@ -44,7 +38,7 @@ myAxios.interceptors.request.use(
   }
 );
 // 添加响应拦截器
-myAxios.interceptors.response.use(
+axios.interceptors.response.use(
   // @ts-ignore
   (response: AxiosResponse<HttpResponse>) => {
     const res = response.data;
