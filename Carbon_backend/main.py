@@ -9,9 +9,11 @@ app = FastAPI()
 # 配置 CORS 中间件
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:5173", "http://127.0.0.1:5173",
-    #                "https://carbon-price.vercel.app/"],
-    allow_origins=["*"],  # 临时允许所有来源
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://carbon-price.vercel.app"
+    ],
     # 允许前端地址进行跨域请求
     allow_credentials=True,
     allow_methods=["*"],  # 允许所有方法（GET, POST 等）
