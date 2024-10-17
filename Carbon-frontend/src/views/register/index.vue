@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img alt="logo" src="../../assets/images/logo.svg" />
+      <a-image width="22" height="22" :src="logo2" />
       <div class="logo-text">Carbon Price</div>
     </div>
     <LoginBanner />
@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts" setup>
+  import logo2 from '@/assets/images/logo2.png';
   import LoginBanner from './components/banner.vue';
   import RegisterForm from './components/register-form.vue';
 </script>
