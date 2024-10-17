@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img alt="logo" :src="logo" />
+        <img alt="logo" src="../../assets/images/logo.svg" />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
@@ -190,7 +190,6 @@
 </template>
 
 <script lang="ts" setup>
-  import logo from '@/assets/images/logo.svg';
   import { computed, inject, ref } from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useFullscreen, useToggle } from '@vueuse/core';
