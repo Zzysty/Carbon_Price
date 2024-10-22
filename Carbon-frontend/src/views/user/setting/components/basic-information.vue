@@ -3,99 +3,47 @@
     ref="formRef"
     :model="formData"
     class="form"
-    :label-col-props="{ span: 8 }"
     :wrapper-col-props="{ span: 16 }"
   >
     <a-form-item
+      field="username"
+      :label="$t('userSetting.basicInfo.form.label.username')"
+    >
+      <a-input
+        v-model="formData.username"
+        :placeholder="$t('userSetting.basicInfo.placeholder.username')"
+      />
+    </a-form-item>
+    <a-form-item field="user_role" label="权限">
+      <a-radio-group v-model="formData.user_role" :size="'medium'" label="role">
+        <a-radio value="user">用户</a-radio>
+        <a-radio value="admin">管理员</a-radio>
+      </a-radio-group>
+    </a-form-item>
+    <a-form-item field="gender" label="性别">
+      <a-radio-group v-model="formData.gender" :size="'medium'">
+        <a-radio value="male">男</a-radio>
+        <a-radio value="female">女</a-radio>
+      </a-radio-group>
+    </a-form-item>
+    <a-form-item field="phone" label="电话">
+      <a-input v-model="formData.phone" placeholder="请输入电话" />
+    </a-form-item>
+    <a-form-item
       field="email"
       :label="$t('userSetting.basicInfo.form.label.email')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.email.required'),
-        },
-      ]"
     >
       <a-input
         v-model="formData.email"
         :placeholder="$t('userSetting.basicInfo.placeholder.email')"
       />
     </a-form-item>
-    <a-form-item
-      field="nickname"
-      :label="$t('userSetting.basicInfo.form.label.nickname')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.nickname.required'),
-        },
-      ]"
-    >
-      <a-input
-        v-model="formData.nickname"
-        :placeholder="$t('userSetting.basicInfo.placeholder.nickname')"
-      />
-    </a-form-item>
-    <a-form-item
-      field="countryRegion"
-      :label="$t('userSetting.basicInfo.form.label.countryRegion')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.countryRegion.required'),
-        },
-      ]"
-    >
-      <a-select
-        v-model="formData.countryRegion"
-        :placeholder="$t('userSetting.basicInfo.placeholder.area')"
-      >
-        <a-option value="China">中国</a-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item
-      field="area"
-      :label="$t('userSetting.basicInfo.form.label.area')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.area.required'),
-        },
-      ]"
-    >
-      <a-cascader
-        v-model="formData.area"
-        :placeholder="$t('userSetting.basicInfo.placeholder.area')"
-        :options="[
-          {
-            label: '北京',
-            value: 'beijing',
-            children: [
-              {
-                label: '北京',
-                value: 'beijing',
-                children: [
-                  {
-                    label: '朝阳',
-                    value: 'chaoyang',
-                  },
-                ],
-              },
-            ],
-          },
-        ]"
-        allow-clear
-      />
-    </a-form-item>
-    <a-form-item
-      field="address"
-      :label="$t('userSetting.basicInfo.form.label.address')"
-    >
-      <a-input
-        v-model="formData.address"
-        :placeholder="$t('userSetting.basicInfo.placeholder.address')"
-      />
-    </a-form-item>
+    <!--    <a-form-item field="gender" label="性别">-->
+    <!--      <a-select v-model="formData.gender" placeholder="请选择性别">-->
+    <!--        <a-option value="male">男</a-option>-->
+    <!--        <a-option value="female">女</a-option>-->
+    <!--      </a-select>-->
+    <!--    </a-form-item>-->
     <a-form-item
       field="profile"
       :label="$t('userSetting.basicInfo.form.label.profile')"
@@ -108,13 +56,13 @@
       row-class="keep-margin"
     >
       <a-textarea
-        v-model="formData.profile"
+        v-model="formData.description"
         :placeholder="$t('userSetting.basicInfo.placeholder.profile')"
       />
     </a-form-item>
     <a-form-item>
       <a-space>
-        <a-button type="primary" @click="validate">
+        <a-button type="primary" @click="validateAndSave">
           {{ $t('userSetting.save') }}
         </a-button>
         <a-button type="secondary" @click="reset">
@@ -128,32 +76,48 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import { FormInstance } from '@arco-design/web-vue/es/form';
-  import { BasicInfoModel } from '@/api/user-center';
+  import { BasicInfoModel, updateUserInfo } from '@/api/user-center';
+  import { Message } from '@arco-design/web-vue';
+  import { useUserStore } from '@/store';
 
+  const userStore = useUserStore();
   const formRef = ref<FormInstance>();
   const formData = ref<BasicInfoModel>({
+    username: '',
+    gender: '',
     email: '',
-    nickname: '',
-    countryRegion: '',
-    area: '',
-    address: '',
-    profile: '',
+    phone: '',
+    description: '',
+    user_role: '',
   });
-  const validate = async () => {
-    const res = await formRef.value?.validate();
-    if (!res) {
-      // do some thing
-      // you also can use html-type to submit
-    }
-  };
   const reset = async () => {
-    await formRef.value?.resetFields();
+    formRef.value?.resetFields();
+  };
+  // 保存并更新表单数据
+  const validateAndSave = async () => {
+    try {
+      // const res = await formRef.value?.validate();
+      const res = await updateUserInfo(formData.value);
+
+      if (res.code === 200) {
+        await userStore.info();
+        // 提示保存成功
+        Message.success('保存成功');
+        formRef.value?.resetFields();
+      } else {
+        // 处理错误
+        Message.error(res.msg);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('表单验证失败或保存出错:', error);
+    }
   };
 </script>
 
 <style scoped lang="less">
   .form {
-    width: 540px;
+    width: 580px;
     margin: 0 auto;
   }
 </style>

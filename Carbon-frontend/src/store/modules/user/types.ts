@@ -8,11 +8,13 @@ export interface UserState {
   // job?: string;
   // location?: string;
   email?: string;
-  // introduction?: string;
+  description?: string;
   // personalWebsite?: string;
-  // phone?: string;
-  // registrationDate?: string;
+  phone?: string;
+  created_at?: string;
+  updated_at?: string;
   user_role: RoleType;
+  isLoading?: boolean;
 }
 
 export interface Token {

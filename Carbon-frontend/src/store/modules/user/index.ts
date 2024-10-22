@@ -9,7 +9,7 @@ import {
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import { UserState } from './types';
+import { RoleType, UserState } from './types';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
@@ -18,8 +18,13 @@ const useUserStore = defineStore('user', {
     username: undefined,
     gender: undefined,
     email: undefined,
+    phone: undefined,
     avatar: undefined,
-    user_role: '',
+    description: undefined,
+    created_at: undefined,
+    updated_at: undefined,
+    user_role: '' as RoleType,
+    isLoading: false,
   }),
 
   getters: {
@@ -47,10 +52,18 @@ const useUserStore = defineStore('user', {
 
     // Get user's information 获取当前用户信息
     async info() {
-      const res = await getUserInfo();
-      // eslint-disable-next-line no-console
-      // console.log('test', res.data);
-      this.setInfo(res.data);
+      this.isLoading = true; // 开始加载
+      try {
+        const res = await getUserInfo();
+        // eslint-disable-next-line no-console
+        // console.log('test', res.data);
+        this.setInfo(res.data);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     // Register 注册表单

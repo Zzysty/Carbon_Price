@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getToken } from '@/utils/auth';
 
 export interface MyProjectRecord {
   id: number;
@@ -11,6 +12,7 @@ export interface MyProjectRecord {
     avatar: string;
   }[];
 }
+
 export function queryMyProjectList() {
   return axios.post('/api/user/my-project/list');
 }
@@ -21,6 +23,7 @@ export interface MyTeamRecord {
   name: string;
   peopleNumber: number;
 }
+
 export function queryMyTeamList() {
   return axios.post('/api/user/my-team/list');
 }
@@ -31,21 +34,23 @@ export interface LatestActivity {
   description: string;
   avatar: string;
 }
+
 export function queryLatestActivity() {
   return axios.post<LatestActivity[]>('/api/user/latest-activity');
 }
 
-export function saveUserInfo() {
-  return axios.post('/api/user/save-info');
+// 更新用户基本信息
+export interface BasicInfoModel {
+  username: string;
+  gender: string;
+  email: string;
+  phone: string;
+  description: string;
+  user_role: string;
 }
 
-export interface BasicInfoModel {
-  email: string;
-  nickname: string;
-  countryRegion: string;
-  area: string;
-  address: string;
-  profile: string;
+export function updateUserInfo(data: BasicInfoModel) {
+  return axios.put<BasicInfoModel>('/api/user/update', data);
 }
 
 export interface EnterpriseCertificationModel {
@@ -78,11 +83,15 @@ export function queryCertification() {
 
 export function userUploadApi(
   data: FormData,
-  config: {
-    controller: AbortController;
-    onUploadProgress?: (progressEvent: any) => void;
-  }
 ) {
-  // const controller = new AbortController();
-  return axios.post('/api/user/upload', data, config);
+  const token = getToken();
+  if (!token) {
+    throw new Error('Token is not available');
+  }
+  return axios.post('/api/user/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 }
