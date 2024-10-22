@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.user import crud
 from app.api.user.crud import get_current_user
-from app.config.settings import ACCESS_TOKEN_EXPIRE_MINUTES, UPLOAD_DIR
+from app.config.settings import settings
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.response import success_response, error_response, ResponseBase
@@ -49,7 +49,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
         return error_response("Incorrect username or password", code=400)
 
     # 生成 JWT token
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = crud.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
@@ -126,12 +126,12 @@ async def upload_user_avatar(file: UploadFile = File(...), db: Session = Depends
         raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
 
     # 检查文件夹是否存在，如果不存在则创建文件夹
-    if not os.path.exists(UPLOAD_DIR):
-        os.makedirs(UPLOAD_DIR)
+    if not os.path.exists(settings.upload_dir):
+        os.makedirs(settings.upload_dir)
 
     # 读取文件内容，保存文件，或者上传到云存储
     try:
-        file_location = f"{UPLOAD_DIR}{file.filename}"
+        file_location = f"{settings.upload_dir}{file.filename}"
         with open(file_location, "wb") as buffer:
             buffer.write(await file.read())  # 保存文件到本地
 

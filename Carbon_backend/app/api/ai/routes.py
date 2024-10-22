@@ -2,11 +2,12 @@ from fastapi import APIRouter
 from starlette.responses import StreamingResponse
 from zhipuai import ZhipuAI
 
-from app.config.settings import ZHIPU_AI_API_KEY
+from app.config.settings import settings
 
 router = APIRouter()
 
-client = ZhipuAI(api_key=ZHIPU_AI_API_KEY)
+client = ZhipuAI(api_key=settings.zhipu_ai_api_key)
+
 
 @router.get("/chat/sse")
 async def chat_stream():

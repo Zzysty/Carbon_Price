@@ -6,7 +6,7 @@ from starlette.staticfiles import StaticFiles
 from app.api.ai import routes as ai_routes
 from app.api.carbon_market import routes as carbon_market_routes
 from app.api.user import routes as user_routes
-from app.config.settings import UPLOAD_DIR
+from app.config.settings import settings
 
 app = FastAPI()
 
@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 # 使得 FastAPI 可以服务静态文件
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
 
 
 @app.get("/")

@@ -1,25 +1,11 @@
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from app.config.settings import settings
 
-# 根据环境选择数据库配置
-ENV = os.getenv('ENV', 'dev')  # 默认为开发环境，如果线上环境需要设置 ENV 为 'production'
+# 根据 settings 配置数据库连接
+SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{settings.db_username}:{settings.db_password}@{settings.db_host}/{settings.db_name}"
 
-if ENV == 'production':
-    # 线上数据库连接配置
-    DB_USERNAME = os.getenv('DB_USERNAME', 'root')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '5586305Zzy')
-    DB_HOST = os.getenv('DB_HOST', '10.35.111.172')
-    DB_NAME = os.getenv('DB_NAME', 'carbon')
-else:
-    # 开发数据库连接配置
-    DB_USERNAME = os.getenv('DB_USERNAME', 'root')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '12345')
-    DB_HOST = os.getenv('DB_HOST', 'localhost')
-    DB_NAME = os.getenv('DB_NAME', 'carbon')
-
-SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 # SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 # 创建数据库引擎
