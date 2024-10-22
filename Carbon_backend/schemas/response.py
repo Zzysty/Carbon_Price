@@ -15,8 +15,8 @@ class ResponseBase(BaseModel, Generic[T]):
 
 # 通用成功响应
 def success_response(data: Optional[Union[T, dict]] = None, message: str = "Success") -> ResponseBase[T]:
-    if data is None:
-        data = {}
+    # if data is None:
+    #     data = {}
     return ResponseBase(code=200, msg=message, data=data)
 
 

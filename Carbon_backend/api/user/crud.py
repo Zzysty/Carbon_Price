@@ -8,6 +8,11 @@ from core.config import pwd_context, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, AL
 from models.user import User
 
 
+def to_camel(string: str) -> str:
+    """将字段名转换为驼峰命名法"""
+    return ''.join(word.capitalize() if i != 0 else word for i, word in enumerate(string.split('_')))
+
+
 # 创建密码哈希
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -65,4 +70,16 @@ def get_current_user(db: Session, token: str):
     user = db.query(User).filter(User.username == username).first()
     if user is None:
         raise credentials_exception
+    return user
+
+
+# 更新用户头像
+def update_user_avatar(db: Session, current_user_id: str, avatar_url: str):
+    user = db.query(User).filter(User.id == current_user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.avatar = avatar_url  # 更新用户头像字段
+    db.commit()  # 提交事务
+    db.refresh(user)  # 刷新对象，确保返回最新数据
     return user
