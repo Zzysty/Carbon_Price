@@ -1,6 +1,6 @@
-import axios from "axios";
-import type { DescData } from "@arco-design/web-vue/es/descriptions/interface";
-import { Notification } from "@arco-design/web-vue";
+import axios from 'axios';
+import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
+import { Notification } from '@arco-design/web-vue';
 
 // 外部因素
 export interface OtherFactorsRecord {

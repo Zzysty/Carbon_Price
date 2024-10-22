@@ -158,14 +158,14 @@
                 </span>
               </a-space>
             </a-doption>
-            <a-doption>
-              <a-space @click="$router.push({ name: 'Info' })">
-                <icon-user />
-                <span>
-                  {{ $t('messageBox.userCenter') }}
-                </span>
-              </a-space>
-            </a-doption>
+<!--            <a-doption>-->
+<!--              <a-space @click="$router.push({ name: 'Info' })">-->
+<!--                <icon-user />-->
+<!--                <span>-->
+<!--                  {{ $t('messageBox.userCenter') }}-->
+<!--                </span>-->
+<!--              </a-space>-->
+<!--            </a-doption>-->
             <a-doption>
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings />
@@ -207,7 +207,7 @@
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
   const avatar = computed(() => {
-    return userStore.avatar;
+    return `${import.meta.env.VITE_API_BASE_URL}/${userStore.avatar}`;
   });
   const theme = computed(() => {
     return appStore.theme;

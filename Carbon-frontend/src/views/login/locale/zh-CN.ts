@@ -10,6 +10,6 @@ export default {
   'login.form.forgetPassword': '忘记密码',
   'login.form.login': '登录',
   'login.form.register': '注册账号',
-  'login.banner.slogan1': '碳市场信息汇总平台',
+  'login.banner.slogan1': '碳市场信息平台',
   'login.banner.subSlogan1': '湖北、广东、北京、天津',
 };

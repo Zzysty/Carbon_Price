@@ -9,9 +9,9 @@
       :title="$t('workplace.contentDataHb')"
     >
       <template #extra>
-        <a-link href="/list/search-table-hb">{{
-          $t('workplace.detail')
-        }}</a-link>
+        <a-link href="/list/search-table-hb"
+          >{{ $t('workplace.detail') }}
+        </a-link>
       </template>
       <Chart height="289px" :option="chartOption" />
     </a-card>

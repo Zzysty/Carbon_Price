@@ -75,6 +75,7 @@ axios.interceptors.response.use(
       content: error.msg || '请求失败',
       duration: 5 * 1000,
     });
+    console.log(error);
     return Promise.reject(error);
   }
 );
