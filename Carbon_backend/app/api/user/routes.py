@@ -5,13 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from api.user import crud
-from api.user.crud import get_current_user
-from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, UPLOAD_DIR
-from db.session import get_db
-from models import User
-from schemas.response import success_response, error_response, ResponseBase
-from schemas.user import UserResponse, UserCreate, Token, UserBasicInfo
+from app.api.user import crud
+from app.api.user.crud import get_current_user
+from app.config.settings import ACCESS_TOKEN_EXPIRE_MINUTES, UPLOAD_DIR
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.response import success_response, error_response, ResponseBase
+from app.schemas.user import UserResponse, UserCreate, Token, UserBasicInfo
 
 router = APIRouter()
 

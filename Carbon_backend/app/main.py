@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
-from api.ai import routes as ai_routes
-from api.carbon_market import routes as carbon_market_routes
-from api.user import routes as user_routes
-from core.config import UPLOAD_DIR
+from app.api.ai import routes as ai_routes
+from app.api.carbon_market import routes as carbon_market_routes
+from app.api.user import routes as user_routes
+from app.config.settings import UPLOAD_DIR
 
 app = FastAPI()
 

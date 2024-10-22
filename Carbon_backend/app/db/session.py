@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # 根据环境选择数据库配置
-ENV = os.getenv('ENV', 'production')  # 默认为开发环境，如果线上环境需要设置 ENV 为 'production'
+ENV = os.getenv('ENV', 'dev')  # 默认为开发环境，如果线上环境需要设置 ENV 为 'production'
 
 if ENV == 'production':
     # 线上数据库连接配置

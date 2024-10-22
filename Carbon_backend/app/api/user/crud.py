@@ -4,8 +4,8 @@ from fastapi import HTTPException
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from core.config import pwd_context, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
-from models.user import User
+from app.config.settings import pwd_context, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from app.models.user import User
 
 
 def to_camel(string: str) -> str:

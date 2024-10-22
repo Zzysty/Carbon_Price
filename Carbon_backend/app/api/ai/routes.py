@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from starlette.responses import StreamingResponse
 from zhipuai import ZhipuAI
 
-from core.config import ZHIPU_AI_API_KEY
+from app.config.settings import ZHIPU_AI_API_KEY
 
 router = APIRouter()
 

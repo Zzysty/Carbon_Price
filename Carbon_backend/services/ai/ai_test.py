@@ -1,6 +1,6 @@
 from zhipuai import ZhipuAI
 
-from core.config import ZHIPU_AI_API_KEY
+from app.config.settings import ZHIPU_AI_API_KEY
 
 # 示例
 # client = ZhipuAI(api_key=ZHIPU_AI_API_KEY)  # 请填写您自己的API Key
