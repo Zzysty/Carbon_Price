@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     db_host: str
     db_name: str
 
+    # Redis 配置
+    redis_host: str
+    redis_port: int
+    redis_db: int = 0
+    redis_password: str = None
+
     class Config:
         # 动态加载不同环境的 .env 文件
         env_file = f".env.{os.getenv('ENVIRONMENT', 'development')}"
