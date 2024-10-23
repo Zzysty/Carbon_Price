@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 import aioredis
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,10 +9,22 @@ from starlette.staticfiles import StaticFiles
 from app.api.ai import routes as ai_routes
 from app.api.carbon_market import routes as carbon_market_routes
 from app.api.user import routes as user_routes
-from app.config.redis_client import get_redis_client
+from app.config.redis_client import get_redis_pool
 from app.config.settings import settings
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 在应用启动时初始化 Redis 连接池
+    app.state.redis = await get_redis_pool()
+
+    yield  # 在此处可以让请求处理继续
+
+    # 在应用关闭时关闭 Redis 连接池
+    await app.state.redis.close()
+
+
+app = FastAPI(lifespan=lifespan)
 
 # 配置 CORS 中间件
 app.add_middleware(
@@ -47,19 +61,16 @@ app.include_router(ai_routes.router, prefix="/api/ai", tags=["AI"])
 
 
 @app.get("/test-redis/")
-async def test_redis_connection(redis_client: aioredis.Redis = Depends(get_redis_client)):
-    """测试 Redis 连接是否成功"""
+async def test_redis_connection():
+    redis_client = app.state.redis
     try:
-        # 设置一个测试值
+        # 使用异步 Redis 客户端操作
         await redis_client.set("test_key", "test_value")
-        # 获取该测试值
         value = await redis_client.get("test_key")
 
-        # 检查是否成功
         if value == "test_value":
             return {"message": "Redis connection successful", "value": value}
         else:
             return {"message": "Redis connection failed", "error": "Incorrect value retrieved"}
     except Exception as e:
-        # 捕获连接异常
         return {"message": "Redis connection failed", "error": str(e)}
