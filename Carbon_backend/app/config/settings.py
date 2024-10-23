@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     redis_port: int
     redis_db: int = 0
     redis_password: str = None
+    lock_timeout: int = 10
+    cache_timeout: int = 60
 
     class Config:
         # 动态加载不同环境的 .env 文件

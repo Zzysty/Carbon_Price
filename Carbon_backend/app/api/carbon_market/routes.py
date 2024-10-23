@@ -1,9 +1,14 @@
+import json
+
+from aioredis import Redis
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy import asc, func
 from sqlalchemy.orm import Session
 
 from app.api.carbon_market.crud import get_columns_map, process_file, get_data, market_to_table, market_price_field_map, \
     market_response_model_map, market_name_map
+from app.config.redis_client import get_redis_pool
+from app.config.settings import settings
 from app.db.session import get_db
 from app.models.carbon_market import CarbonMarketHB, CarbonMarketGD, CarbonMarketTJ, CarbonMarketBJ, OtherFactors
 from app.schemas.carbon_market import CarbonMarketHBQueryParams, CarbonMarketResponseWithTotal, \
@@ -68,6 +73,7 @@ async def upload_bj(file: UploadFile = File(...), db: Session = Depends(get_db))
 def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: Session = Depends(get_db)):
     """
     通用查询接口，支持不同的市场，补充外部因素
+        返回市场所有信息
     """
     # 根据路径参数中的市场标识，确定表模型
     table_model = market_to_table.get(market)
@@ -87,6 +93,7 @@ def query_market_data(market: str, query_params: CarbonMarketHBQueryParams, db: 
 def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
     """
     通用日期、碳价格查询接口，支持不同的市场
+        只返回日期，价格两个字段
     """
     # 根据路径参数中的市场标识，确定表模型
     table_model = market_to_table.get(market)
@@ -123,6 +130,7 @@ def query_market_date_price_data(market: str, db: Session = Depends(get_db)):
 def query_market_daily_data(db: Session = Depends(get_db)):
     """
     查询四个市场的最新数据
+        返回每个市场最新日期的数据，包含所有字段并统一字段名
     """
     global unified_record
     markets_data = []
@@ -175,16 +183,41 @@ def query_market_daily_data(db: Session = Depends(get_db)):
 
 
 @router.get("/carbon_count", response_model=ResponseBase[CarbonAllCountResponseList])
-def carbon_num_vis(db: Session = Depends(get_db)):
+async def carbon_num_vis(db: Session = Depends(get_db), redis_client: Redis = Depends(get_redis_pool)):
     """
-        遍历所有数据库模型类，查询各自表中数据总数以及总的数据条数
+    遍历所有数据库模型类，查询各自表中数据总数以及总的数据条数
     """
-    total_count = 0
-    table_counts = []
+    # 缓存 key 和锁 key
+    cache_key = "carbon_count_cache"
+    lock_key = "carbon_count_lock"
 
-    for market, table_model in market_to_table.items():
-        count = db.query(func.count(table_model.id)).scalar()
-        total_count += count
-        table_counts.append({"market": market_name_map.get(market, market), "count": count})
+    # 尝试获取缓存
+    cached_data = await redis_client.get(cache_key)
+    if cached_data:
+        return success_response(data=json.loads(cached_data))
 
-    return success_response(data={"total": total_count, "items": table_counts})
+    # 获取锁
+    lock_acquired = await redis_client.set(lock_key, "locked", ex=settings.lock_timeout, nx=True)
+    if not lock_acquired:
+        # 如果没有获取到锁，说明其他请求正在执行，返回一个提示
+        return error_response("Another request is processing, please try again later.")
+
+    try:
+        total_count = 0
+        table_counts = []
+
+        for market, table_model in market_to_table.items():
+            count = db.query(func.count(table_model.id)).scalar()
+            total_count += count
+            table_counts.append({"market": market_name_map.get(market, market), "count": count})
+
+        result = {"total": total_count, "items": table_counts}
+        # 将结果缓存到 Redis
+        await redis_client.set(cache_key, json.dumps(result), ex=settings.cache_timeout)
+
+        return success_response(data=result)
+    except Exception as e:
+        return error_response(message=f'request error: {str(e)}')
+    finally:
+        # 释放锁
+        await redis_client.delete(lock_key)
